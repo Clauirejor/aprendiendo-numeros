@@ -7,8 +7,6 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Números">
 <meta name="theme-color" content="#5B8FF9">
-<link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icons/icon-512.png">
 <title>Aprendo los Números</title>
 <style>
 /* ══════════════════════════════════════════════
@@ -170,7 +168,11 @@ body {
 .act-ordenar::before  { background:var(--morado); }
 .act-comparar::before { background:var(--rosa); }
 .act-sumas::before    { background:#06D6A0; }
+.act-restas::before   { background:#FF6B6B; }
 .act-multi::before    { background:#FFD166; }
+.act-division::before { background:#A78BFA; }
+.act-sumasrestas::before { background:linear-gradient(90deg,#06D6A0,#FF6B6B); }
+.act-multidiv::before    { background:linear-gradient(90deg,#FFD166,#A78BFA); }
 .act-trazar::before   { background:#FF9F43; }
 
 /* ── CABECERA ACTIVIDAD ── */
@@ -379,10 +381,22 @@ body {
       <span class="icono">⚖️</span><span class="nombre">Más o menos</span>
     </button>
     <button class="btn-actividad act-sumas"    onclick="iniciarActividad('sumas')">
-      <span class="icono">➕</span><span class="nombre">Sumas y restas</span>
+      <span class="icono">➕</span><span class="nombre">Sumas</span>
+    </button>
+    <button class="btn-actividad act-restas"   onclick="iniciarActividad('restas')">
+      <span class="icono">➖</span><span class="nombre">Restas</span>
     </button>
     <button class="btn-actividad act-multi"    onclick="iniciarActividad('multi')">
-      <span class="icono">✖️</span><span class="nombre">× y ÷ primeros pasos</span>
+      <span class="icono">✖️</span><span class="nombre">Multiplicar</span>
+    </button>
+    <button class="btn-actividad act-division" onclick="iniciarActividad('division')">
+      <span class="icono">➗</span><span class="nombre">Dividir</span>
+    </button>
+    <button class="btn-actividad act-sumasrestas" onclick="iniciarActividad('sumasrestas')" style="grid-column:span 2">
+      <span class="icono">➕➖</span><span class="nombre">Sumas y restas mezcladas</span>
+    </button>
+    <button class="btn-actividad act-multidiv" onclick="iniciarActividad('multidiv')" style="grid-column:span 2">
+      <span class="icono">✖️➗</span><span class="nombre">× y ÷ mezcladas</span>
     </button>
     <button class="btn-actividad act-trazar"   onclick="iniciarActividad('trazar')" style="grid-column:span 2">
       <span class="icono">✏️</span><span class="nombre">Escribir números con el dedo</span>
@@ -453,9 +467,9 @@ body {
   </div>
 </div>
 
-<!-- ═══════════════════ SUMAS Y RESTAS ═══════════════════ -->
+<!-- ═══════════════════ SUMAS ═══════════════════ -->
 <div class="pantalla" id="pantalla-sumas">
-  <div class="topbar"><button class="btn-volver" onclick="volverMenu()">←</button><span class="titulo-cabecera">Sumas y Restas</span><span class="nivel-badge" id="badge-sumas">1/6</span></div>
+  <div class="topbar"><button class="btn-volver" onclick="volverMenu()">←</button><span class="titulo-cabecera">Sumas ➕</span><span class="nivel-badge" id="badge-sumas">1/6</span></div>
   <div class="area-juego">
     <div class="barra-progreso"><div class="barra-relleno" id="barra-sumas" style="width:0%"></div></div>
     <div class="operacion-display" id="operacion-sumas"></div>
@@ -464,15 +478,61 @@ body {
   </div>
 </div>
 
-<!-- ═══════════════════ MULTIPLICACIÓN Y DIVISIÓN ═══════════════════ -->
+<!-- ═══════════════════ RESTAS ═══════════════════ -->
+<div class="pantalla" id="pantalla-restas">
+  <div class="topbar"><button class="btn-volver" onclick="volverMenu()">←</button><span class="titulo-cabecera">Restas ➖</span><span class="nivel-badge" id="badge-restas">1/6</span></div>
+  <div class="area-juego">
+    <div class="barra-progreso"><div class="barra-relleno" id="barra-restas" style="width:0%"></div></div>
+    <div class="operacion-display" id="operacion-restas"></div>
+    <div class="opciones" id="opciones-restas"></div>
+    <div class="feedback" id="feedback-restas"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ SUMAS Y RESTAS MEZCLADAS ═══════════════════ -->
+<div class="pantalla" id="pantalla-sumasrestas">
+  <div class="topbar"><button class="btn-volver" onclick="volverMenu()">←</button><span class="titulo-cabecera">➕ y ➖ mezcladas</span><span class="nivel-badge" id="badge-sumasrestas">1/6</span></div>
+  <div class="area-juego">
+    <div class="barra-progreso"><div class="barra-relleno" id="barra-sumasrestas" style="width:0%"></div></div>
+    <div class="operacion-display" id="operacion-sumasrestas"></div>
+    <div class="opciones" id="opciones-sumasrestas"></div>
+    <div class="feedback" id="feedback-sumasrestas"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ MULTIPLICACIÓN ═══════════════════ -->
 <div class="pantalla" id="pantalla-multi">
-  <div class="topbar"><button class="btn-volver" onclick="volverMenu()">←</button><span class="titulo-cabecera">× y ÷ primeros pasos</span><span class="nivel-badge" id="badge-multi">1/6</span></div>
+  <div class="topbar"><button class="btn-volver" onclick="volverMenu()">←</button><span class="titulo-cabecera">Multiplicar ✖️</span><span class="nivel-badge" id="badge-multi">1/6</span></div>
   <div class="area-juego">
     <div class="barra-progreso"><div class="barra-relleno" id="barra-multi" style="width:0%"></div></div>
     <p class="pregunta-texto" id="preg-multi">¿Cuánto es?</p>
     <div id="display-multi" style="width:100%"></div>
     <div class="opciones" id="opciones-multi"></div>
     <div class="feedback" id="feedback-multi"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ DIVISIÓN ═══════════════════ -->
+<div class="pantalla" id="pantalla-division">
+  <div class="topbar"><button class="btn-volver" onclick="volverMenu()">←</button><span class="titulo-cabecera">Dividir ➗</span><span class="nivel-badge" id="badge-division">1/6</span></div>
+  <div class="area-juego">
+    <div class="barra-progreso"><div class="barra-relleno" id="barra-division" style="width:0%"></div></div>
+    <p class="pregunta-texto" id="preg-division">¿Cuánto es?</p>
+    <div id="display-division" style="width:100%"></div>
+    <div class="opciones" id="opciones-division"></div>
+    <div class="feedback" id="feedback-division"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ × y ÷ MEZCLADAS ═══════════════════ -->
+<div class="pantalla" id="pantalla-multidiv">
+  <div class="topbar"><button class="btn-volver" onclick="volverMenu()">←</button><span class="titulo-cabecera">✖️ y ➗ mezcladas</span><span class="nivel-badge" id="badge-multidiv">1/6</span></div>
+  <div class="area-juego">
+    <div class="barra-progreso"><div class="barra-relleno" id="barra-multidiv" style="width:0%"></div></div>
+    <p class="pregunta-texto" id="preg-multidiv">¿Cuánto es?</p>
+    <div id="display-multidiv" style="width:100%"></div>
+    <div class="opciones" id="opciones-multidiv"></div>
+    <div class="feedback" id="feedback-multidiv"></div>
   </div>
 </div>
 
@@ -552,7 +612,9 @@ const G = {
   tema: 'normal',
   pianoModo: 'libre',
   pianoPreguntaNum: null,
-  pianoSonido: 'nota'
+  pianoSonido: 'nota',
+  tipoSR: 'ambas',
+  tipoMD: 'ambas'
 };
 
 // Guardar/cargar datos
@@ -688,15 +750,19 @@ function iniciarActividad(nombre) {
   G.actividad=nombre; G.total=6; G.pregunta=0; G.aciertos=0; G.respondido=false;
   emojiSesion=EMOJIS[Math.floor(Math.random()*EMOJIS.length)];
   ({
-    reconocer: iniciarReconocer,
-    contar:    iniciarContar,
-    cantidad:  iniciarCantidad,
-    ordenar:   iniciarOrdenar,
-    comparar:  iniciarComparar,
-    sumas:     iniciarSumas,
-    multi:     iniciarMulti,
-    piano:     iniciarPiano,
-    trazar:    iniciarTrazo
+    reconocer:   iniciarReconocer,
+    contar:      iniciarContar,
+    cantidad:    iniciarCantidad,
+    ordenar:     iniciarOrdenar,
+    comparar:    iniciarComparar,
+    sumas:       iniciarSumas,
+    restas:      iniciarRestas,
+    sumasrestas: iniciarSumasRestas,
+    multi:       iniciarMulti,
+    division:    iniciarDivision,
+    multidiv:    iniciarMultiDiv,
+    piano:       iniciarPiano,
+    trazar:      iniciarTrazo
   })[nombre]();
 }
 
@@ -842,108 +908,152 @@ function cargarComparar() {
 // ════════════════════════════════════════
 // SUMAS Y RESTAS
 // ════════════════════════════════════════
-function iniciarSumas() {
-  mostrarPantalla('pantalla-sumas');
-  actualizarProgreso('sumas',1,G.total); cargarSumas();
+// ════════════════════════════════════════
+// SUMAS / RESTAS — función central
+// ════════════════════════════════════════
+// tipo: 'suma' | 'resta' | 'ambas'
+function iniciarOperacionSR(pantallaId, tipo) {
+  G.tipoSR = tipo;
+  mostrarPantalla('pantalla-' + pantallaId);
+  actualizarProgreso(pantallaId, 1, G.total);
+  cargarOperacionSR(pantallaId);
 }
-function cargarSumas() {
-  document.getElementById('feedback-sumas').textContent=''; document.getElementById('feedback-sumas').className='feedback';
-  const maxOp=Math.min(G.nivel,20);
-  const esSuma=Math.random()<0.6; // 60% sumas, 40% restas al empezar
-  let a,b,resultado,signo;
-  if(esSuma){ a=numRand(maxOp-1); b=numRand(maxOp-a); resultado=a+b; signo='+'; }
-  else { a=numRand(maxOp); b=numRand(a); resultado=a-b; signo='−'; }
 
-  // Mostrar operación
-  const od=document.getElementById('operacion-sumas');
-  od.innerHTML=`
+function cargarOperacionSR(pantallaId) {
+  const feedEl = document.getElementById('feedback-' + pantallaId);
+  feedEl.textContent = ''; feedEl.className = 'feedback';
+  const maxOp = Math.min(G.nivel, 20);
+  const tipo = G.tipoSR;
+  const esSuma = tipo === 'suma' ? true : tipo === 'resta' ? false : Math.random() < 0.5;
+  let a, b, resultado, signo;
+  if (esSuma) { a = numRand(maxOp - 1); b = numRand(maxOp - a); resultado = a + b; signo = '+'; }
+  else        { a = numRand(maxOp); b = numRand(a); resultado = a - b; signo = '−'; }
+
+  const od = document.getElementById('operacion-' + pantallaId);
+  od.innerHTML = `
     <div class="operacion-texto">
       ${a} <span class="signo">${signo}</span> ${b} = <span class="resultado-hueco">?</span>
     </div>
-    <div class="ayuda-visual" id="ayuda-visual-sumas"></div>`;
-
-  // Ayuda visual con bolitas
-  const av=document.getElementById('ayuda-visual-sumas');
-  if(a+b<=20){
-    for(let i=0;i<a;i++){ const d=document.createElement('div'); d.className='bolita a'; d.textContent=emojiSesion; av.appendChild(d); }
-    for(let i=0;i<b;i++){
-      const d=document.createElement('div'); d.className='bolita b'+(signo==='−'?' tachada':''); d.textContent=emojiSesion; av.appendChild(d);
-    }
+    <div class="ayuda-visual" id="av-${pantallaId}"></div>`;
+  const av = document.getElementById('av-' + pantallaId);
+  if (a + b <= 20) {
+    for (let i = 0; i < a; i++) { const d = document.createElement('div'); d.className = 'bolita a'; d.textContent = emojiSesion; av.appendChild(d); }
+    for (let i = 0; i < b; i++) { const d = document.createElement('div'); d.className = 'bolita b' + (signo === '−' ? ' tachada' : ''); d.textContent = emojiSesion; av.appendChild(d); }
   }
+  hablar(`${a} ${esSuma ? 'más' : 'menos'} ${b} ¿cuánto es?`);
 
-  const ops=opcionesUnicas(resultado,3,Math.min(a+b+5,maxOp+b),Math.max(0,resultado-3));
-  const oc=document.getElementById('opciones-sumas'); oc.innerHTML='';
-  ops.forEach(n=>{
-    const bt=document.createElement('button'); bt.className='btn-opcion'; bt.textContent=n;
-    bt.onclick=()=>{
-      if(G.respondido)return; G.respondido=true; const ok=n===resultado;
-      bt.classList.add(ok?'correcto':'incorrecto');
-      if(ok){ G.aciertos++; od.querySelector('.resultado-hueco').textContent=resultado; od.querySelector('.resultado-hueco').style.color='var(--p2)'; }
-      mostrarFeedback('sumas',ok); setTimeout(()=>siguiente('sumas',cargarSumas),1500);
+  const ops = opcionesUnicas(resultado, 3, Math.min(a + b + 5, maxOp + b), Math.max(0, resultado - 3));
+  const oc = document.getElementById('opciones-' + pantallaId); oc.innerHTML = '';
+  ops.forEach(n => {
+    const bt = document.createElement('button'); bt.className = 'btn-opcion'; bt.textContent = n;
+    bt.onclick = () => {
+      if (G.respondido) return;
+      const ok = n === resultado;
+      if (!ok) {
+        // FALLO: marcar en rojo, limpiar y volver a intentar la MISMA pregunta
+        bt.classList.add('incorrecto');
+        mostrarFeedback(pantallaId, false);
+        setTimeout(() => {
+          bt.classList.remove('incorrecto');
+          feedEl.textContent = ''; feedEl.className = 'feedback';
+        }, 1000);
+        return;
+      }
+      // ACIERTO
+      G.respondido = true; G.aciertos++;
+      bt.classList.add('correcto');
+      od.querySelector('.resultado-hueco').textContent = resultado;
+      od.querySelector('.resultado-hueco').style.color = 'var(--p2)';
+      mostrarFeedback(pantallaId, true);
+      setTimeout(() => siguiente(pantallaId, () => cargarOperacionSR(pantallaId)), 1500);
     };
     oc.appendChild(bt);
   });
-  hablar(`${a} ${esSuma?'más':'menos'} ${b} ¿cuánto es?`);
 }
 
+function iniciarSumas()      { iniciarOperacionSR('sumas',      'suma'); }
+function iniciarRestas()     { iniciarOperacionSR('restas',     'resta'); }
+function iniciarSumasRestas(){ iniciarOperacionSR('sumasrestas','ambas'); }
+
 // ════════════════════════════════════════
-// MULTIPLICACIÓN Y DIVISIÓN
+// MULTIPLICACIÓN / DIVISIÓN — función central
 // ════════════════════════════════════════
-function iniciarMulti() {
-  mostrarPantalla('pantalla-multi');
-  actualizarProgreso('multi',1,G.total); cargarMulti();
+// tipo: 'multi' | 'division' | 'ambas'
+function iniciarOperacionMD(pantallaId, tipo) {
+  G.tipoMD = tipo;
+  mostrarPantalla('pantalla-' + pantallaId);
+  actualizarProgreso(pantallaId, 1, G.total);
+  cargarOperacionMD(pantallaId);
 }
-function cargarMulti() {
-  document.getElementById('feedback-multi').textContent=''; document.getElementById('feedback-multi').className='feedback';
-  const esMulti=Math.random()<0.5;
-  const maxFactor=Math.min(5, Math.floor(Math.sqrt(G.nivel)));
-  let a,b,resultado;
-  if(esMulti){
-    a=numRand(maxFactor); b=numRand(maxFactor); resultado=a*b;
-    document.getElementById('preg-multi').textContent=`¿Cuánto es ${a} × ${b}?`;
+
+function cargarOperacionMD(pantallaId) {
+  const feedEl = document.getElementById('feedback-' + pantallaId);
+  feedEl.textContent = ''; feedEl.className = 'feedback';
+  const tipo = G.tipoMD;
+  const esMulti = tipo === 'multi' ? true : tipo === 'division' ? false : Math.random() < 0.5;
+  const maxFactor = Math.min(5, Math.floor(Math.sqrt(G.nivel)));
+  let a, b, resultado;
+
+  const pregEl   = document.getElementById('preg-' + pantallaId);
+  const dispEl   = document.getElementById('display-' + pantallaId);
+
+  if (esMulti) {
+    a = numRand(maxFactor); b = numRand(maxFactor); resultado = a * b;
+    pregEl.textContent = `¿Cuánto es ${a} × ${b}?`;
     hablar(`${a} por ${b}, ¿cuánto es?`);
-
-    // Visual: grupos de objetos
-    const d=document.getElementById('display-multi');
-    let html=`<div class="multi-display"><div class="multi-texto">${a} <span style="color:var(--p1)">×</span> ${b} = ?</div><div style="font-size:14px;color:var(--txt2);text-align:center;margin-bottom:12px">${a} grupos de ${b}</div><div class="multi-grupos">`;
-    for(let i=0;i<a;i++){
-      html+=`<div class="multi-grupo">`;
-      for(let j=0;j<b;j++) html+=`<div class="obj">${emojiSesion}</div>`;
-      html+=`</div>`;
-      if(i<a-1) html+=`<div class="multi-sep">+</div>`;
+    let html = `<div class="multi-display"><div class="multi-texto">${a} <span style="color:var(--p1)">×</span> ${b} = ?</div><div style="font-size:14px;color:var(--txt2);text-align:center;margin-bottom:12px">${a} grupos de ${b}</div><div class="multi-grupos">`;
+    for (let i = 0; i < a; i++) {
+      html += `<div class="multi-grupo">`;
+      for (let j = 0; j < b; j++) html += `<div class="obj">${emojiSesion}</div>`;
+      html += `</div>`;
+      if (i < a - 1) html += `<div class="multi-sep">+</div>`;
     }
-    html+=`</div></div>`;
-    d.innerHTML=html;
+    html += `</div></div>`; dispEl.innerHTML = html;
   } else {
-    // División simple (sin resto)
-    b=numRand(maxFactor); resultado=numRand(maxFactor); a=b*resultado;
-    document.getElementById('preg-multi').textContent=`¿Cuánto es ${a} ÷ ${b}?`;
+    b = numRand(maxFactor); resultado = numRand(maxFactor); a = b * resultado;
+    pregEl.textContent = `¿Cuánto es ${a} ÷ ${b}?`;
     hablar(`${a} dividido entre ${b}, ¿cuánto es?`);
-    const d=document.getElementById('display-multi');
-    let html=`<div class="division-display"><div class="division-linea"><div class="div-box">${a}</div><div class="div-signo">÷</div><div class="div-box">${b}</div><div class="div-signo">=</div><div class="div-box" style="color:var(--p1)">?</div></div>`;
-    // Visual: repartir en grupos
-    html+=`<div style="margin-top:14px;font-size:14px;color:var(--txt2);text-align:center">Repartir ${a} ${emojiSesion} en ${b} grupos iguales</div><div class="multi-grupos" style="margin-top:10px">`;
-    for(let i=0;i<b;i++){
-      html+=`<div class="multi-grupo">`;
-      for(let j=0;j<resultado;j++) html+=`<div class="obj">${emojiSesion}</div>`;
-      html+=`</div>`;
+    let html = `<div class="division-display"><div class="division-linea"><div class="div-box">${a}</div><div class="div-signo">÷</div><div class="div-box">${b}</div><div class="div-signo">=</div><div class="div-box" style="color:var(--p1)">?</div></div>`;
+    html += `<div style="margin-top:14px;font-size:14px;color:var(--txt2);text-align:center">Repartir ${a} ${emojiSesion} en ${b} grupos iguales</div><div class="multi-grupos" style="margin-top:10px">`;
+    for (let i = 0; i < b; i++) {
+      html += `<div class="multi-grupo">`;
+      for (let j = 0; j < resultado; j++) html += `<div class="obj">${emojiSesion}</div>`;
+      html += `</div>`;
     }
-    html+=`</div></div>`;
-    d.innerHTML=html;
+    html += `</div></div>`; dispEl.innerHTML = html;
   }
 
-  const ops=opcionesUnicas(resultado,3,Math.max(resultado+4,6),Math.max(1,resultado-3));
-  const oc=document.getElementById('opciones-multi'); oc.innerHTML='';
-  ops.forEach(n=>{
-    const bt=document.createElement('button'); bt.className='btn-opcion'; bt.textContent=n;
-    bt.onclick=()=>{
-      if(G.respondido)return; G.respondido=true; const ok=n===resultado;
-      bt.classList.add(ok?'correcto':'incorrecto'); if(ok)G.aciertos++;
-      mostrarFeedback('multi',ok); setTimeout(()=>siguiente('multi',cargarMulti),1500);
+  const ops = opcionesUnicas(resultado, 3, Math.max(resultado + 4, 6), Math.max(1, resultado - 3));
+  const oc = document.getElementById('opciones-' + pantallaId); oc.innerHTML = '';
+  ops.forEach(n => {
+    const bt = document.createElement('button'); bt.className = 'btn-opcion'; bt.textContent = n;
+    bt.onclick = () => {
+      if (G.respondido) return;
+      const ok = n === resultado;
+      if (!ok) {
+        // FALLO: no avanza, solo tiembla
+        bt.classList.add('incorrecto');
+        mostrarFeedback(pantallaId, false);
+        setTimeout(() => {
+          bt.classList.remove('incorrecto');
+          feedEl.textContent = ''; feedEl.className = 'feedback';
+        }, 1000);
+        return;
+      }
+      // ACIERTO
+      G.respondido = true; G.aciertos++;
+      bt.classList.add('correcto');
+      mostrarFeedback(pantallaId, true);
+      setTimeout(() => siguiente(pantallaId, () => cargarOperacionMD(pantallaId)), 1500);
     };
     oc.appendChild(bt);
   });
 }
+
+function iniciarMulti()    { iniciarOperacionMD('multi',    'multi'); }
+function iniciarDivision() { iniciarOperacionMD('division', 'division'); }
+function iniciarMultiDiv() { iniciarOperacionMD('multidiv', 'ambas'); }
+
 
 // ════════════════════════════════════════
 // PIANO
@@ -1119,10 +1229,6 @@ cargarLocal();
 document.addEventListener('DOMContentLoaded', ()=>{
   if(ctx2d){ const c=getComputedStyle(document.body).getPropertyValue('--p1').trim(); if(c)ctx2d.strokeStyle=c; }
 });
-
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
-}
 </script>
 </body>
 </html>
