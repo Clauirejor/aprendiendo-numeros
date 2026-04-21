@@ -298,6 +298,12 @@ body {
 
 .icono-hablar { width:48px; height:48px; border-radius:50%; background:var(--p1); border:none; color:white; font-size:20px; cursor:pointer; box-shadow:var(--sh); display:flex; align-items:center; justify-content:center; transition:transform 0.1s; }
 .icono-hablar:active { transform:scale(0.88); }
+
+/* ── SELECTOR DE IDIOMA ── */
+.selector-idioma { display:flex; gap:8px; justify-content:center; margin-bottom:14px; width:100%; max-width:420px; }
+.btn-idioma { flex:1; padding:12px 8px; border-radius:16px; border:3px solid transparent; background:var(--surface); font-size:14px; font-weight:800; color:var(--txt2); cursor:pointer; transition:all 0.2s; font-family:var(--font); display:flex; flex-direction:column; align-items:center; gap:3px; box-shadow:var(--sh); }
+.btn-idioma .flag { font-size:24px; }
+.btn-idioma.activo { background:var(--p1); color:white; border-color:var(--p1d); transform:translateY(-2px); box-shadow:0 6px 0 var(--p1d); }
 </style>
 </head>
 <body>
@@ -341,18 +347,36 @@ body {
 <div class="pantalla activa" id="pantalla-menu">
   <div class="topbar" style="max-width:420px">
     <div class="topbar-left">
-      <span class="nombre-juego">Juego de:</span>
+      <span class="nombre-juego" id="lbl-juego-de">Juego de:</span>
       <span class="nombre-jugadora" id="display-nombre">¿Quién juega?</span>
     </div>
-    <button class="btn-config" onclick="abrirConfig()">⚙️</button>
+    <div style="display:flex;gap:8px">
+      <button class="btn-config" id="btn-idioma-toggle" onclick="abrirSelectorIdioma()" title="Idioma">🌐</button>
+      <button class="btn-config" onclick="abrirConfig()">⚙️</button>
+    </div>
+  </div>
+
+  <!-- Selector idioma desplegable -->
+  <div id="panel-idioma" style="display:none;width:100%;max-width:420px;margin-bottom:8px">
+    <div class="selector-idioma">
+      <button class="btn-idioma activo" id="btn-lang-es" onclick="setIdioma('es',this)">
+        <span class="flag">🇪🇸</span><span>Castellano</span>
+      </button>
+      <button class="btn-idioma" id="btn-lang-ca" onclick="setIdioma('ca',this)">
+        <span class="flag">🌊</span><span>Valencià</span>
+      </button>
+      <button class="btn-idioma" id="btn-lang-en" onclick="setIdioma('en',this)">
+        <span class="flag">🇬🇧</span><span>English</span>
+      </button>
+    </div>
   </div>
 
   <div class="logo-principal">🔢</div>
-  <h1 class="titulo-principal">Los Números</h1>
-  <p class="subtitulo-principal">¡Vamos a aprender!</p>
+  <h1 class="titulo-principal" data-i18n="titulo">Los Números</h1>
+  <p class="subtitulo-principal" data-i18n="subtitulo">¡Vamos a aprender!</p>
 
   <div class="selector-nivel">
-    <p>¿Hasta qué número?</p>
+    <p data-i18n="hasta">¿Hasta qué número?</p>
     <div class="botones-nivel">
       <button class="btn-nivel activo" onclick="setNivel(10,this)">1–10</button>
       <button class="btn-nivel" onclick="setNivel(20,this)">1–20</button>
@@ -363,43 +387,43 @@ body {
 
   <div class="grid-actividades">
     <button class="btn-actividad act-piano"    onclick="iniciarActividad('piano')">
-      <span class="icono">🎹</span><span class="nombre">Piano de números</span>
+      <span class="icono">🎹</span><span class="nombre" data-i18n="act_piano">Piano de números</span>
     </button>
     <button class="btn-actividad act-reconocer" onclick="iniciarActividad('reconocer')">
-      <span class="icono">👀</span><span class="nombre">Reconocer números</span>
+      <span class="icono">👀</span><span class="nombre" data-i18n="act_reconocer">Reconocer números</span>
     </button>
     <button class="btn-actividad act-contar"   onclick="iniciarActividad('contar')">
-      <span class="icono">✋</span><span class="nombre">Contar objetos</span>
+      <span class="icono">✋</span><span class="nombre" data-i18n="act_contar">Contar objetos</span>
     </button>
     <button class="btn-actividad act-cantidad" onclick="iniciarActividad('cantidad')">
-      <span class="icono">🔍</span><span class="nombre">¿Cuántos hay?</span>
+      <span class="icono">🔍</span><span class="nombre" data-i18n="act_cantidad">¿Cuántos hay?</span>
     </button>
     <button class="btn-actividad act-ordenar"  onclick="iniciarActividad('ordenar')">
-      <span class="icono">🔢</span><span class="nombre">¿Qué sigue?</span>
+      <span class="icono">🔢</span><span class="nombre" data-i18n="act_ordenar">¿Qué sigue?</span>
     </button>
     <button class="btn-actividad act-comparar" onclick="iniciarActividad('comparar')">
-      <span class="icono">⚖️</span><span class="nombre">Más o menos</span>
+      <span class="icono">⚖️</span><span class="nombre" data-i18n="act_comparar">Más o menos</span>
     </button>
     <button class="btn-actividad act-sumas"    onclick="iniciarActividad('sumas')">
-      <span class="icono">➕</span><span class="nombre">Sumas</span>
+      <span class="icono">➕</span><span class="nombre" data-i18n="act_sumas">Sumas</span>
     </button>
     <button class="btn-actividad act-restas"   onclick="iniciarActividad('restas')">
-      <span class="icono">➖</span><span class="nombre">Restas</span>
+      <span class="icono">➖</span><span class="nombre" data-i18n="act_restas">Restas</span>
     </button>
     <button class="btn-actividad act-multi"    onclick="iniciarActividad('multi')">
-      <span class="icono">✖️</span><span class="nombre">Multiplicar</span>
+      <span class="icono">✖️</span><span class="nombre" data-i18n="act_multi">Multiplicar</span>
     </button>
     <button class="btn-actividad act-division" onclick="iniciarActividad('division')">
-      <span class="icono">➗</span><span class="nombre">Dividir</span>
+      <span class="icono">➗</span><span class="nombre" data-i18n="act_division">Dividir</span>
     </button>
     <button class="btn-actividad act-sumasrestas" onclick="iniciarActividad('sumasrestas')" style="grid-column:span 2">
-      <span class="icono">➕➖</span><span class="nombre">Sumas y restas mezcladas</span>
+      <span class="icono">➕➖</span><span class="nombre" data-i18n="act_sumasrestas">Sumas y restas mezcladas</span>
     </button>
     <button class="btn-actividad act-multidiv" onclick="iniciarActividad('multidiv')" style="grid-column:span 2">
-      <span class="icono">✖️➗</span><span class="nombre">× y ÷ mezcladas</span>
+      <span class="icono">✖️➗</span><span class="nombre" data-i18n="act_multidiv">× y ÷ mezcladas</span>
     </button>
     <button class="btn-actividad act-trazar"   onclick="iniciarActividad('trazar')" style="grid-column:span 2">
-      <span class="icono">✏️</span><span class="nombre">Escribir números con el dedo</span>
+      <span class="icono">✏️</span><span class="nombre" data-i18n="act_trazar">Escribir números con el dedo</span>
     </button>
   </div>
 </div>
@@ -428,7 +452,7 @@ body {
     <div class="area-objetos" id="objetos-contar"></div>
     <div class="contador-toque" id="contador-contar">0</div>
     <div class="feedback" id="feedback-contar"></div>
-    <button class="btn-principal" id="btn-contar-ok" style="display:none" onclick="siguiente('contar',()=>cargarContar())">¡Siguiente! →</button>
+    <button class="btn-principal" id="btn-contar-ok" style="display:none" onclick="siguiente('contar',()=>cargarContar())" data-i18n="siguiente">¡Siguiente! →</button>
   </div>
 </div>
 
@@ -572,15 +596,15 @@ body {
   <div class="topbar"><button class="btn-volver" onclick="volverMenu()">←</button><span class="titulo-cabecera">Escribir</span><span class="nivel-badge" id="badge-trazar">1/6</span></div>
   <div class="area-juego">
     <div class="barra-progreso"><div class="barra-relleno" id="barra-trazar" style="width:0%"></div></div>
-    <p class="pregunta-texto">¡Dibuja el número con el dedo!</p>
+    <p class="pregunta-texto" data-i18n="preg_trazar">¡Dibuja el número con el dedo!</p>
     <div class="fila-numero">
       <div class="numero-grande" id="num-trazar" style="font-size:72px">3</div>
       <button class="icono-hablar" onclick="hablar(document.getElementById('num-trazar').textContent)">🔊</button>
     </div>
     <div class="area-trazar"><canvas id="canvas-trazar" height="260"></canvas></div>
     <div style="display:flex;gap:10px;width:100%;justify-content:center">
-      <button class="btn-limpiar" onclick="limpiarCanvas()">🗑️ Borrar</button>
-      <button class="btn-principal verde" style="flex:1;max-width:180px" onclick="siguienteTrazo()">¡Siguiente! →</button>
+      <button class="btn-limpiar" onclick="limpiarCanvas()" data-i18n="borrar">🗑️ Borrar</button>
+      <button class="btn-principal verde" style="flex:1;max-width:180px" onclick="siguienteTrazo()" data-i18n="siguiente">¡Siguiente! →</button>
     </div>
     <div class="feedback" id="feedback-trazar"></div>
   </div>
@@ -593,7 +617,7 @@ body {
     <div class="estrellas" id="estrellas-final">⭐⭐⭐</div>
     <p class="mensaje-final" id="mensaje-final">¡Muy bien!</p>
     <p class="puntuacion" id="puntuacion-final">5 de 6 correctas</p>
-    <button class="btn-principal verde" onclick="volverMenu()">Jugar otra vez</button>
+    <button class="btn-principal verde" onclick="volverMenu()" data-i18n="jugar_otra">Jugar otra vez</button>
   </div>
 </div>
 
@@ -610,6 +634,7 @@ const G = {
   respondido: false,
   nombre: '',
   tema: 'normal',
+  idioma: 'es',
   pianoModo: 'libre',
   pianoPreguntaNum: null,
   pianoSonido: 'nota',
@@ -619,7 +644,7 @@ const G = {
 
 // Guardar/cargar datos
 function guardarLocal() {
-  try { localStorage.setItem('numeros_cfg', JSON.stringify({nombre:G.nombre, tema:G.tema, nivel:G.nivel})); } catch(e){}
+  try { localStorage.setItem('numeros_cfg', JSON.stringify({nombre:G.nombre, tema:G.tema, nivel:G.nivel, idioma:G.idioma})); } catch(e){}
 }
 function cargarLocal() {
   try {
@@ -627,7 +652,260 @@ function cargarLocal() {
     if (d.nombre) { G.nombre = d.nombre; document.getElementById('display-nombre').textContent = d.nombre; }
     if (d.tema)   aplicarTema(d.tema);
     if (d.nivel)  { G.nivel = d.nivel; document.querySelectorAll('.btn-nivel').forEach(b => { b.classList.toggle('activo', parseInt(b.textContent.split('–')[1]) === d.nivel); }); }
+    if (d.idioma) setIdioma(d.idioma, document.getElementById('btn-lang-'+d.idioma));
+    else aplicarI18n();
   } catch(e){}
+}
+
+// ════════════════════════════════════════
+// SISTEMA DE IDIOMAS (i18n)
+// ════════════════════════════════════════
+const TEXTOS = {
+  es: {
+    // Menú
+    titulo: 'Los Números', subtitulo: '¡Vamos a aprender!', hasta: '¿Hasta qué número?',
+    juego_de: 'Juego de:', quien_juega: '¿Quién juega?',
+    act_piano: 'Piano de números', act_reconocer: 'Reconocer números',
+    act_contar: 'Contar objetos', act_cantidad: '¿Cuántos hay?',
+    act_ordenar: '¿Qué sigue?', act_comparar: 'Más o menos',
+    act_sumas: 'Sumas', act_restas: 'Restas',
+    act_multi: 'Multiplicar', act_division: 'Dividir',
+    act_sumasrestas: 'Sumas y restas mezcladas',
+    act_multidiv: '× y ÷ mezcladas',
+    act_trazar: 'Escribir números con el dedo',
+    // Actividades
+    preg_reconocer: '¿Qué número es este?',
+    preg_contar: 'Toca cada objeto para contar',
+    preg_cantidad: '¿Cuántos hay?',
+    preg_ordenar: '¿Qué número va después?',
+    preg_comparar_mas: '¿Cuál grupo tiene MÁS?',
+    preg_comparar_menos: '¿Cuál grupo tiene MENOS?',
+    preg_trazar: '¡Dibuja el número con el dedo!',
+    preg_multi_por: (a,b) => `¿Cuánto es ${a} × ${b}?`,
+    preg_multi_div: (a,b) => `¿Cuánto es ${a} ÷ ${b}?`,
+    grupos_de: (a,b) => T('grupos_de',a,b),
+    repartir: (a,b) => `Repartir ${a} en ${b} grupos iguales`,
+    // Piano
+    toca_tecla: 'Toca una tecla',
+    piano_libre: '🎹 Libre', piano_escuchar: '👂 Escucha y toca',
+    piano_sonido_lbl: '🔊 Al tocar, escuchar:',
+    son_numero: '🗣️ Número', son_nota: '🎵 Nota',
+    son_ambos: '🗣️🎵 Ambos', son_ninguno: '🔇 Ninguno',
+    toca_numero: n => `Toca el número ${n} 🎵`,
+    escucha_toca_num: n => `¿Cuál tecla es el número ${n}? 🔢`,
+    escucha_toca_nota: '¿Cuál tecla suena así? 🎵',
+    escucha_toca_ambos: n => `Escucha y toca el número ${n} 🎵`,
+    toca_numero_voz: n => `Toca el número ${n}`,
+    notas: ['Do','Re','Mi','Fa','Sol','La','Si','Do♪','Re♪','Mi♪','Fa♪'],
+    // Botones
+    siguiente: '¡Siguiente! →', borrar: '🗑️ Borrar',
+    dibuja_primero: '¡Primero dibuja! ✏️',
+    dibuja_num: n => `Dibuja el ${n} con el dedo`,
+    dibuja_num_voz: n => `Dibuja el número ${n}`,
+    // Operaciones
+    mas: 'más', menos: 'menos',
+    preg_op: (a, op, b) => `${a} ${op==='+'?'más':'menos'} ${b} ¿cuánto es?`,
+    preg_mul_voz: (a,b) => `${a} por ${b}, ¿cuánto es?`,
+    preg_div_voz: (a,b) => `${a} dividido entre ${b}, ¿cuánto es?`,
+    // Feedback
+    feedback_ok: ['¡Muy bien! 🎉','¡Genial! ⭐','¡Correcto! 🌟','¡Bravo! 🏆','¡Fantástico! 🎈'],
+    feedback_mal: '¡Inténtalo de nuevo! 💪',
+    feedback_ok_voz: '¡Muy bien!', feedback_mal_voz: 'Inténtalo otra vez',
+    feedback_comparar_ok: (n) => `¡El grupo tiene ${n}!`,
+    // Config
+    config_titulo: '⚙️ Configuración', config_nombre_lbl: 'Nombre de la jugadora:',
+    config_nombre_placeholder: 'Escribe el nombre...', config_guardar: '✅ Guardar',
+    config_apariencia: 'Apariencia:',
+    // Final
+    final_genial: n => `¡Eres increíble, ${n}!`,
+    final_bien: n => `¡Muy bien, ${n}!`,
+    final_practica: n => `¡Sigue practicando, ${n}!`,
+    final_puntos: (a,t) => `${a} de ${t} correctas`,
+    jugar_otra: 'Jugar otra vez',
+    // voz síntesis
+    voz_lang: 'es-ES',
+    voz_lang_num: 'es-ES', // para hablar números
+  },
+  ca: {
+    titulo: 'Els Números', subtitulo: 'Anem a aprendre!', hasta: 'Fins a quin número?',
+    juego_de: 'Joc de:', quien_juega: 'Qui juga?',
+    act_piano: 'Piano de números', act_reconocer: 'Reconéixer números',
+    act_contar: 'Comptar objectes', act_cantidad: 'Quants hi ha?',
+    act_ordenar: 'Quin segueix?', act_comparar: 'Més o menys',
+    act_sumas: 'Sumes', act_restas: 'Restes',
+    act_multi: 'Multiplicar', act_division: 'Dividir',
+    act_sumasrestas: 'Sumes i restes barrejades',
+    act_multidiv: '× i ÷ barrejades',
+    act_trazar: 'Escriure números amb el dit',
+    preg_reconocer: 'Quin número és aquest?',
+    preg_contar: 'Toca cada objecte per comptar',
+    preg_cantidad: 'Quants hi ha?',
+    preg_ordenar: 'Quin número va després?',
+    preg_comparar_mas: 'Quin grup té MÉS?',
+    preg_comparar_menos: 'Quin grup té MENYS?',
+    preg_trazar: 'Dibuixa el número amb el dit!',
+    preg_multi_por: (a,b) => `Quant és ${a} × ${b}?`,
+    preg_multi_div: (a,b) => `Quant és ${a} ÷ ${b}?`,
+    grupos_de: (a,b) => `${a} grups de ${b}`,
+    repartir: (a,b) => `Repartir ${a} en ${b} grups iguals`,
+    toca_tecla: 'Toca una tecla',
+    piano_libre: '🎹 Lliure', piano_escuchar: '👂 Escolta i toca',
+    piano_sonido_lbl: '🔊 En tocar, escoltar:',
+    son_numero: '🗣️ Número', son_nota: '🎵 Nota',
+    son_ambos: '🗣️🎵 Tots dos', son_ninguno: '🔇 Cap',
+    toca_numero: n => `Toca el número ${n} 🎵`,
+    escucha_toca_num: n => `Quina tecla és el número ${n}? 🔢`,
+    escucha_toca_nota: 'Quina tecla sona així? 🎵',
+    escucha_toca_ambos: n => `Escolta i toca el número ${n} 🎵`,
+    toca_numero_voz: n => `Toca el número ${n}`,
+    notas: ['Do','Re','Mi','Fa','Sol','La','Si','Do♪','Re♪','Mi♪','Fa♪'],
+    siguiente: 'Següent! →', borrar: '🗑️ Esborrar',
+    dibuja_primero: 'Primer dibuixa! ✏️',
+    dibuja_num: n => `Dibuixa el ${n} amb el dit`,
+    dibuja_num_voz: n => `Dibuixa el número ${n}`,
+    mas: 'més', menos: 'menys',
+    preg_op: (a, op, b) => `${a} ${op==='+'?'més':'menys'} ${b} quant és?`,
+    preg_mul_voz: (a,b) => `${a} per ${b}, quant és?`,
+    preg_div_voz: (a,b) => `${a} dividit entre ${b}, quant és?`,
+    feedback_ok: ['Molt bé! 🎉','Genial! ⭐','Correcte! 🌟','Bravo! 🏆','Fantàstic! 🎈'],
+    feedback_mal: 'Torna-ho a intentar! 💪',
+    feedback_ok_voz: 'Molt bé!', feedback_mal_voz: 'Torna-ho a intentar',
+    feedback_comparar_ok: (n) => `El grup té ${n}!`,
+    config_titulo: '⚙️ Configuració', config_nombre_lbl: 'Nom de la jugadora:',
+    config_nombre_placeholder: 'Escriu el nom...', config_guardar: '✅ Guardar',
+    config_apariencia: 'Aparença:',
+    final_genial: n => `Ets increïble, ${n}!`,
+    final_bien: n => `Molt bé, ${n}!`,
+    final_practica: n => `Continua practicant, ${n}!`,
+    final_puntos: (a,t) => `${a} de ${t} correctes`,
+    jugar_otra: 'Jugar una altra vegada',
+    voz_lang: 'ca-ES',
+    voz_lang_num: 'ca-ES',
+  },
+  en: {
+    titulo: 'Numbers', subtitulo: "Let's learn!", hasta: 'Up to which number?',
+    juego_de: 'Playing:', quien_juega: 'Who is playing?',
+    act_piano: 'Number Piano', act_reconocer: 'Recognise numbers',
+    act_contar: 'Count objects', act_cantidad: 'How many are there?',
+    act_ordenar: "What's next?", act_comparar: 'More or less',
+    act_sumas: 'Addition', act_restas: 'Subtraction',
+    act_multi: 'Multiply', act_division: 'Divide',
+    act_sumasrestas: 'Addition & subtraction mixed',
+    act_multidiv: '× and ÷ mixed',
+    act_trazar: 'Write numbers with your finger',
+    preg_reconocer: 'Which number is this?',
+    preg_contar: 'Tap each object to count',
+    preg_cantidad: 'How many are there?',
+    preg_ordenar: 'Which number comes next?',
+    preg_comparar_mas: 'Which group has MORE?',
+    preg_comparar_menos: 'Which group has FEWER?',
+    preg_trazar: 'Draw the number with your finger!',
+    preg_multi_por: (a,b) => `What is ${a} × ${b}?`,
+    preg_multi_div: (a,b) => `What is ${a} ÷ ${b}?`,
+    grupos_de: (a,b) => `${a} groups of ${b}`,
+    repartir: (a,b) => `Share ${a} into ${b} equal groups`,
+    toca_tecla: 'Tap a key',
+    piano_libre: '🎹 Free play', piano_escuchar: '👂 Listen & tap',
+    piano_sonido_lbl: '🔊 When tapping, hear:',
+    son_numero: '🗣️ Number', son_nota: '🎵 Note',
+    son_ambos: '🗣️🎵 Both', son_ninguno: '🔇 None',
+    toca_numero: n => `Tap number ${n} 🎵`,
+    escucha_toca_num: n => `Which key is number ${n}? 🔢`,
+    escucha_toca_nota: 'Which key sounds like this? 🎵',
+    escucha_toca_ambos: n => `Listen and tap number ${n} 🎵`,
+    toca_numero_voz: n => `Tap number ${n}`,
+    notas: ['C','D','E','F','G','A','B','C♪','D♪','E♪','F♪'],
+    siguiente: 'Next! →', borrar: '🗑️ Clear',
+    dibuja_primero: 'Draw first! ✏️',
+    dibuja_num: n => `Draw the ${n} with your finger`,
+    dibuja_num_voz: n => `Draw number ${n}`,
+    mas: 'plus', menos: 'minus',
+    preg_op: (a, op, b) => `${a} ${op==='+'?'plus':'minus'} ${b}, what is it?`,
+    preg_mul_voz: (a,b) => `${a} times ${b}, what is it?`,
+    preg_div_voz: (a,b) => `${a} divided by ${b}, what is it?`,
+    feedback_ok: ['Well done! 🎉','Great! ⭐','Correct! 🌟','Bravo! 🏆','Fantastic! 🎈'],
+    feedback_mal: 'Try again! 💪',
+    feedback_ok_voz: 'Well done!', feedback_mal_voz: 'Try again',
+    feedback_comparar_ok: (n) => `The group has ${n}!`,
+    config_titulo: '⚙️ Settings', config_nombre_lbl: "Player's name:",
+    config_nombre_placeholder: 'Enter name...', config_guardar: '✅ Save',
+    config_apariencia: 'Appearance:',
+    final_genial: n => `You are amazing, ${n}!`,
+    final_bien: n => `Great job, ${n}!`,
+    final_practica: n => `Keep practising, ${n}!`,
+    final_puntos: (a,t) => `${a} out of ${t} correct`,
+    jugar_otra: 'Play again',
+    voz_lang: 'en-GB',
+    voz_lang_num: 'en-GB',
+  }
+};
+
+function T(key, ...args) {
+  const t = TEXTOS[G.idioma] || TEXTOS.es;
+  const v = t[key] ?? TEXTOS.es[key];
+  return typeof v === 'function' ? v(...args) : v;
+}
+
+let panelIdiomaAbierto = false;
+function abrirSelectorIdioma() {
+  panelIdiomaAbierto = !panelIdiomaAbierto;
+  document.getElementById('panel-idioma').style.display = panelIdiomaAbierto ? 'block' : 'none';
+}
+
+function setIdioma(lang, btn) {
+  G.idioma = lang;
+  document.querySelectorAll('.btn-idioma').forEach(b => b.classList.remove('activo'));
+  if (btn) btn.classList.add('activo');
+  aplicarI18n();
+  guardarLocal();
+  panelIdiomaAbierto = false;
+  document.getElementById('panel-idioma').style.display = 'none';
+}
+
+function aplicarI18n() {
+  // Aplicar a todos los elementos con data-i18n
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    el.textContent = T(key);
+  });
+  // Textos específicos sin data-i18n
+  document.getElementById('lbl-juego-de').textContent = T('juego_de');
+  const dn = document.getElementById('display-nombre');
+  if (!G.nombre) dn.textContent = T('quien_juega');
+  // Modal config
+  document.querySelector('.modal-titulo').textContent = T('config_titulo');
+  document.querySelector('.campo-nombre label').textContent = T('config_nombre_lbl');
+  document.getElementById('input-nombre').placeholder = T('config_nombre_placeholder');
+  document.querySelector('.btn-guardar').textContent = T('config_guardar');
+  document.querySelector('.temas-titulo').textContent = T('config_apariencia');
+  // Piano
+  const pn = document.getElementById('piano-nom-nota');
+  if (pn && pn.textContent !== '—') {} // no resetear si está en uso
+  const ptxt = document.getElementById('piano-pregunta-txt');
+  if (ptxt) ptxt.textContent = T('toca_numero', G.pianoPreguntaNum ?? 0);
+  // Botones piano modo
+  const modos = document.querySelectorAll('.btn-piano-modo');
+  if (modos[0]) modos[0].textContent = T('piano_libre');
+  if (modos[1]) modos[1].textContent = T('piano_escuchar');
+  // Botones piano sonido labels
+  const sonBtns = document.querySelectorAll('.btn-sonido');
+  const sonKeys = ['son_numero','son_nota','son_ambos','son_ninguno'];
+  sonBtns.forEach((b,i) => { if(sonKeys[i]) b.textContent = T(sonKeys[i]); });
+  const slbl = document.querySelector('.piano-sonido p');
+  if (slbl) slbl.textContent = T('piano_sonido_lbl');
+  // Notas del piano — reconstruir si el piano está visible
+  if (document.getElementById('pantalla-piano').classList.contains('activa')) {
+    construirPiano();
+    document.getElementById('piano-nom-nota').textContent = T('toca_tecla');
+  }
+  // Botón siguiente trazar
+  const btnSigTrazo = document.querySelector('#pantalla-trazar .btn-principal.verde');
+  if (btnSigTrazo) btnSigTrazo.textContent = T('siguiente');
+  const btnBorrar = document.querySelector('#pantalla-trazar .btn-limpiar');
+  if (btnBorrar) btnBorrar.textContent = T('borrar');
+  // Botón final
+  const btnFinal = document.querySelector('#pantalla-final .btn-principal.verde');
+  if (btnFinal) btnFinal.textContent = T('jugar_otra');
 }
 
 // ════════════════════════════════════════
@@ -654,13 +932,13 @@ function aplicarTema(tema) {
 }
 
 function guardarConfig() {
-  const nombre = document.getElementById('input-nombre').value.trim() || 'amiga';
+  const nombre = document.getElementById('input-nombre').value.trim() || T('quien_juega');
   G.nombre = nombre;
   document.getElementById('display-nombre').textContent = nombre;
   aplicarTema(temaSeleccionado);
   guardarLocal();
   cerrarConfig();
-  hablar('¡Hola, ' + nombre + '!');
+  hablar(G.idioma==='en' ? `Hello, ${nombre}!` : G.idioma==='ca' ? `Hola, ${nombre}!` : `¡Hola, ${nombre}!`);
 }
 
 // ════════════════════════════════════════
@@ -682,7 +960,7 @@ function hablar(txt, rate=0.85, pitch=1.1) {
   if (!('speechSynthesis' in window)) return;
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(String(txt));
-  u.lang='es-ES'; u.rate=rate; u.pitch=pitch;
+  u.lang = T('voz_lang'); u.rate = rate; u.pitch = pitch;
   speechSynthesis.speak(u);
 }
 
@@ -700,11 +978,12 @@ function lanzarEstrellas(n=6) {
 
 function mostrarFeedback(id, ok, extra='') {
   const el = document.getElementById('feedback-'+id);
+  const fOk = T('feedback_ok');
   if(ok){
-    el.textContent = ['¡Muy bien! 🎉','¡Genial! ⭐','¡Correcto! 🌟','¡Bravo! 🏆','¡Fantástico! 🎈'][Math.floor(Math.random()*5)] + (extra?' '+extra:'');
-    el.className='feedback ok'; lanzarEstrellas(); hablar('¡Muy bien!' + (extra?'. '+extra:''));
+    el.textContent = fOk[Math.floor(Math.random()*fOk.length)] + (extra?' '+extra:'');
+    el.className='feedback ok'; lanzarEstrellas(); hablar(T('feedback_ok_voz') + (extra?'. '+extra:''));
   } else {
-    el.textContent='¡Inténtalo de nuevo! 💪'; el.className='feedback mal'; hablar('Inténtalo otra vez');
+    el.textContent = T('feedback_mal'); el.className='feedback mal'; hablar(T('feedback_mal_voz'));
   }
 }
 
@@ -729,11 +1008,13 @@ function mostrarPantalla(id) { document.querySelectorAll('.pantalla').forEach(p=
 
 function mostrarFinal() {
   const pct=G.aciertos/G.total;
-  const nombre=G.nombre||'campeona';
+  const nombre=G.nombre||'⭐';
   document.getElementById('estrellas-final').textContent=pct>=0.8?'⭐⭐⭐':pct>=0.5?'⭐⭐':'⭐';
-  const msg=pct>=0.8?`¡Eres increíble, ${nombre}!`:pct>=0.5?`¡Muy bien, ${nombre}!`:`¡Sigue practicando, ${nombre}!`;
+  const msg=pct>=0.8?T('final_genial',nombre):pct>=0.5?T('final_bien',nombre):T('final_practica',nombre);
   document.getElementById('mensaje-final').textContent=msg;
-  document.getElementById('puntuacion-final').textContent=`${G.aciertos} de ${G.total} correctas`;
+  document.getElementById('puntuacion-final').textContent=T('final_puntos',G.aciertos,G.total);
+  const btnFinal=document.querySelector('#pantalla-final .btn-principal.verde');
+  if(btnFinal) btnFinal.textContent=T('jugar_otra');
   mostrarPantalla('pantalla-final');
   lanzarEstrellas(10); setTimeout(lanzarEstrellas,700); setTimeout(lanzarEstrellas,1400);
   hablar(msg);
@@ -771,6 +1052,7 @@ function iniciarActividad(nombre) {
 // ════════════════════════════════════════
 function iniciarReconocer() {
   mostrarPantalla('pantalla-reconocer');
+  document.querySelector('#pantalla-reconocer .pregunta-texto').textContent = T('preg_reconocer');
   actualizarProgreso('reconocer',1,G.total); cargarReconocer();
 }
 function cargarReconocer() {
@@ -794,6 +1076,7 @@ function cargarReconocer() {
 let contarTocados=0, contarTotal=0;
 function iniciarContar() {
   mostrarPantalla('pantalla-contar');
+  document.querySelector('#pantalla-contar .pregunta-texto').textContent = T('preg_contar');
   actualizarProgreso('contar',1,G.total); cargarContar();
 }
 function cargarContar() {
@@ -822,6 +1105,7 @@ function cargarContar() {
 // ════════════════════════════════════════
 function iniciarCantidad() {
   mostrarPantalla('pantalla-cantidad');
+  document.querySelector('#pantalla-cantidad .pregunta-texto').textContent = T('preg_cantidad');
   actualizarProgreso('cantidad',1,G.total); cargarCantidad();
 }
 function cargarCantidad() {
@@ -843,6 +1127,7 @@ function cargarCantidad() {
 // ════════════════════════════════════════
 function iniciarOrdenar() {
   mostrarPantalla('pantalla-ordenar');
+  document.querySelector('#pantalla-ordenar .pregunta-texto').textContent = T('preg_ordenar');
   actualizarProgreso('ordenar',1,G.total); cargarOrdenar();
 }
 function cargarOrdenar() {
@@ -853,7 +1138,7 @@ function cargarOrdenar() {
   const fa=document.createElement('div'); fa.className='ficha-numero'; fa.textContent=ant; sec.appendChild(fa);
   const ar=document.createElement('div'); ar.style.cssText='font-size:28px;color:var(--txt2)'; ar.textContent='→'; sec.appendChild(ar);
   const h=document.createElement('div'); h.className='ficha-numero vacia'; h.textContent='?'; sec.appendChild(h);
-  hablar('¿Qué número va después del '+ant+'?');
+  hablar(T('preg_ordenar') + ' ' + ant);
   const ops=opcionesUnicas(sig,3,max); const oc=document.getElementById('opciones-ordenar'); oc.innerHTML='';
   ops.forEach(n=>{
     const b=document.createElement('button'); b.className='btn-opcion'; b.textContent=n;
@@ -878,7 +1163,8 @@ function cargarComparar() {
   let a=Math.min(numRand(G.nivel),12), b=Math.min(numRand(G.nivel),12);
   while(a===b) b=Math.min(numRand(G.nivel),12);
   const tipo=Math.random()<0.5?'mas':'menos';
-  document.getElementById('preg-comparar').textContent=tipo==='mas'?'¿Cuál grupo tiene MÁS?':'¿Cuál grupo tiene MENOS?';
+  const pregTxt = tipo==='mas'?T('preg_comparar_mas'):T('preg_comparar_menos');
+  document.getElementById('preg-comparar').textContent=pregTxt;
   const respCorrecta=tipo==='mas'?(a>b?0:1):(a<b?0:1);
   const numCorrecto=respCorrecta===0?a:b;
   const cont=document.getElementById('grupos-comparar'); cont.innerHTML='';
@@ -895,14 +1181,13 @@ function cargarComparar() {
       g.style.border='none';
       g.querySelectorAll('*').forEach(x=>x.style.color='white');
       if(ok) G.aciertos++;
-      // ← aquí el feedback especial con el número
-      const extra=ok?`¡El grupo tiene ${numCorrecto}!`:'';
+      const extra=ok?T('feedback_comparar_ok',numCorrecto):'';
       mostrarFeedback('comparar',ok,extra);
       setTimeout(()=>siguiente('comparar',cargarComparar),1800);
     };
     cont.appendChild(g);
   });
-  hablar(tipo==='mas'?'¿Cuál grupo tiene más?':'¿Cuál grupo tiene menos?');
+  hablar(pregTxt);
 }
 
 // ════════════════════════════════════════
@@ -940,7 +1225,7 @@ function cargarOperacionSR(pantallaId) {
     for (let i = 0; i < a; i++) { const d = document.createElement('div'); d.className = 'bolita a'; d.textContent = emojiSesion; av.appendChild(d); }
     for (let i = 0; i < b; i++) { const d = document.createElement('div'); d.className = 'bolita b' + (signo === '−' ? ' tachada' : ''); d.textContent = emojiSesion; av.appendChild(d); }
   }
-  hablar(`${a} ${esSuma ? 'más' : 'menos'} ${b} ¿cuánto es?`);
+  hablar(T('preg_op', a, esSuma?'+':'-', b));
 
   const ops = opcionesUnicas(resultado, 3, Math.min(a + b + 5, maxOp + b), Math.max(0, resultado - 3));
   const oc = document.getElementById('opciones-' + pantallaId); oc.innerHTML = '';
@@ -1000,7 +1285,7 @@ function cargarOperacionMD(pantallaId) {
   if (esMulti) {
     a = numRand(maxFactor); b = numRand(maxFactor); resultado = a * b;
     pregEl.textContent = `¿Cuánto es ${a} × ${b}?`;
-    hablar(`${a} por ${b}, ¿cuánto es?`);
+    hablar(T('preg_mul_voz',a,b));
     let html = `<div class="multi-display"><div class="multi-texto">${a} <span style="color:var(--p1)">×</span> ${b} = ?</div><div style="font-size:14px;color:var(--txt2);text-align:center;margin-bottom:12px">${a} grupos de ${b}</div><div class="multi-grupos">`;
     for (let i = 0; i < a; i++) {
       html += `<div class="multi-grupo">`;
@@ -1012,9 +1297,9 @@ function cargarOperacionMD(pantallaId) {
   } else {
     b = numRand(maxFactor); resultado = numRand(maxFactor); a = b * resultado;
     pregEl.textContent = `¿Cuánto es ${a} ÷ ${b}?`;
-    hablar(`${a} dividido entre ${b}, ¿cuánto es?`);
+    hablar(T('preg_div_voz',a,b));
     let html = `<div class="division-display"><div class="division-linea"><div class="div-box">${a}</div><div class="div-signo">÷</div><div class="div-box">${b}</div><div class="div-signo">=</div><div class="div-box" style="color:var(--p1)">?</div></div>`;
-    html += `<div style="margin-top:14px;font-size:14px;color:var(--txt2);text-align:center">Repartir ${a} ${emojiSesion} en ${b} grupos iguales</div><div class="multi-grupos" style="margin-top:10px">`;
+    html += `<div style="margin-top:14px;font-size:14px;color:var(--txt2);text-align:center">${T('repartir',a,b)} ${emojiSesion}</div><div class="multi-grupos" style="margin-top:10px">`;
     for (let i = 0; i < b; i++) {
       html += `<div class="multi-grupo">`;
       for (let j = 0; j < resultado; j++) html += `<div class="obj">${emojiSesion}</div>`;
@@ -1086,7 +1371,7 @@ function iniciarPiano() {
   mostrarPantalla('pantalla-piano');
   construirPiano();
   document.getElementById('piano-num-mostrado').textContent='—';
-  document.getElementById('piano-nom-nota').textContent='Toca una tecla';
+  document.getElementById('piano-nom-nota').textContent=T('toca_tecla');
   document.getElementById('feedback-piano').textContent='';
   document.getElementById('piano-pregunta-area').style.display='none';
   G.pianoPreguntaNum=null;
@@ -1098,7 +1383,7 @@ function construirPiano() {
     const b=document.createElement('button'); b.className='tecla-piano';
     b.style.background=COLORES_PIANO[n];
     b.style.boxShadow=`0 7px 0 rgba(0,0,0,0.25)`;
-    b.innerHTML=`<span style="font-size:28px;font-weight:900">${n}</span><span class="nota-label">${NOTAS_NOMBRES[n]}</span>`;
+    b.innerHTML=`<span style="font-size:28px;font-weight:900">${n}</span><span class="nota-label">${T('notas')[n]}</span>`;
     b.onclick=()=>pulsarTecla(n,b);
     cont.appendChild(b);
   }
@@ -1120,7 +1405,7 @@ function pulsarTecla(n, btn) {
   }
 
   document.getElementById('piano-num-mostrado').textContent=n;
-  document.getElementById('piano-nom-nota').textContent=NOTAS_NOMBRES[n];
+  document.getElementById('piano-nom-nota').textContent=T('notas')[n];
   // Animación
   btn.classList.add('pulsada');
   const nota=document.createElement('div'); nota.className='nota-animada'; nota.textContent='♪';
@@ -1132,8 +1417,8 @@ function pulsarTecla(n, btn) {
     if(G.respondido) return;
     G.respondido=true;
     const ok=n===G.pianoPreguntaNum;
-    if(ok){ G.aciertos++; lanzarEstrellas(); hablar('¡Muy bien! El número '+n); document.getElementById('feedback-piano').textContent='¡Correcto! 🎉'; document.getElementById('feedback-piano').className='feedback ok'; }
-    else { hablar('Inténtalo otra vez'); document.getElementById('feedback-piano').textContent='¡Inténtalo de nuevo! 💪'; document.getElementById('feedback-piano').className='feedback mal'; G.respondido=false; return; }
+    if(ok){ G.aciertos++; lanzarEstrellas(); hablar(T('feedback_ok_voz')); document.getElementById('feedback-piano').textContent=T('feedback_ok')[0]; document.getElementById('feedback-piano').className='feedback ok'; }
+    else { hablar(T('feedback_mal_voz')); document.getElementById('feedback-piano').textContent=T('feedback_mal'); document.getElementById('feedback-piano').className='feedback mal'; G.respondido=false; return; }
     setTimeout(()=>nuevaPreguntaPiano(),1400);
   }
 }
@@ -1153,17 +1438,17 @@ function nuevaPreguntaPiano() {
   const s=G.pianoSonido;
   // Texto de la pista según el modo de sonido
   let pistaTxt='';
-  if(s==='numero')      pistaTxt=`¿Cuál tecla es el número ${n}? 🔢`;
-  else if(s==='nota')   pistaTxt=`¿Cuál tecla suena así? 🎵`;
-  else if(s==='ambos')  pistaTxt=`Escucha y toca el número ${n} 🎵`;
-  else                  pistaTxt=`Toca el número ${n} 🔢`;
+  if(s==='numero')      pistaTxt=T('escucha_toca_num',n);
+  else if(s==='nota')   pistaTxt=T('escucha_toca_nota');
+  else if(s==='ambos')  pistaTxt=T('escucha_toca_ambos',n);
+  else                  pistaTxt=T('toca_numero',n);
   document.getElementById('piano-pregunta-txt').textContent=pistaTxt;
   document.getElementById('feedback-piano').textContent='';
   // Reproducir la pista según preferencia
   setTimeout(()=>{
     if(s==='nota' || s==='ambos') tocarNota(FREQS[n], 0.9);
-    if(s==='numero' || s==='ambos') setTimeout(()=>hablar('Toca el número '+n), s==='ambos'?400:0);
-    if(s==='ninguno') hablar('Toca el número '+n); // en modo sin sonido siempre damos pista verbal para que el juego funcione
+    if(s==='numero' || s==='ambos') setTimeout(()=>hablar(T('toca_numero_voz',n)), s==='ambos'?400:0);
+    if(s==='ninguno') hablar(T('toca_numero_voz',n));
   },300);
 }
 
@@ -1199,7 +1484,7 @@ function endD(){ dibujando=false; }
 
 function cargarTrazo() {
   const n=numRand(G.nivel); document.getElementById('num-trazar').textContent=n;
-  document.getElementById('feedback-trazar').textContent='Dibuja el '+n+' con el dedo';
+  document.getElementById('feedback-trazar').textContent=T('dibuja_num',n);
   document.getElementById('feedback-trazar').className='feedback';
   trazosN=0; limpiarCanvas(); dibujarGuia(n); hablar('Dibuja el número '+n);
 }
@@ -1216,8 +1501,8 @@ function limpiarCanvas() {
   dibujarGuia(document.getElementById('num-trazar').textContent);
 }
 function siguienteTrazo() {
-  if(trazosN===0){ hablar('¡Dibuja primero!'); document.getElementById('feedback-trazar').textContent='¡Primero dibuja! ✏️'; document.getElementById('feedback-trazar').className='feedback mal'; return; }
-  G.aciertos++; lanzarEstrellas(); hablar('¡Muy bien!');
+  if(trazosN===0){ hablar(T('dibuja_primero')); document.getElementById('feedback-trazar').textContent=T('dibuja_primero'); document.getElementById('feedback-trazar').className='feedback mal'; return; }
+  G.aciertos++; lanzarEstrellas(); hablar(T('feedback_ok_voz'));
   setTimeout(()=>siguiente('trazar',cargarTrazo),800);
 }
 
