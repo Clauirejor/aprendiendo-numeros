@@ -945,11 +945,35 @@ function guardarConfig() {
 // UTILIDADES
 
 // Hablar un número adaptado al idioma actual
+// Números escritos en cada idioma para forzar pronunciación correcta en Safari
+const NUMS_ES = ['cero','uno','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez',
+  'once','doce','trece','catorce','quince','dieciséis','diecisiete','dieciocho','diecinueve','veinte',
+  'veintiuno','veintidós','veintitrés','veinticuatro','veinticinco','veintiséis','veintisiete','veintiocho','veintinueve','treinta',
+  'treinta y uno','treinta y dos','treinta y tres','treinta y cuatro','treinta y cinco','treinta y seis','treinta y siete','treinta y ocho','treinta y nueve','cuarenta',
+  'cuarenta y uno','cuarenta y dos','cuarenta y tres','cuarenta y cuatro','cuarenta y cinco','cuarenta y seis','cuarenta y siete','cuarenta y ocho','cuarenta y nueve','cincuenta',
+];
+const NUMS_CA = ['zero','un','dos','tres','quatre','cinc','sis','set','vuit','nou','deu',
+  'onze','dotze','tretze','catorze','quinze','setze','disset','divuit','dinou','vint',
+  'vint-i-un','vint-i-dos','vint-i-tres','vint-i-quatre','vint-i-cinc','vint-i-sis','vint-i-set','vint-i-vuit','vint-i-nou','trenta',
+  'trenta-un','trenta-dos','trenta-tres','trenta-quatre','trenta-cinc','trenta-sis','trenta-set','trenta-vuit','trenta-nou','quaranta',
+  'quaranta-un','quaranta-dos','quaranta-tres','quaranta-quatre','quaranta-cinc','quaranta-sis','quaranta-set','quaranta-vuit','quaranta-nou','cinquanta',
+];
+const NUMS_EN = ['zero','one','two','three','four','five','six','seven','eight','nine','ten',
+  'eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen','twenty',
+  'twenty one','twenty two','twenty three','twenty four','twenty five','twenty six','twenty seven','twenty eight','twenty nine','thirty',
+  'thirty one','thirty two','thirty three','thirty four','thirty five','thirty six','thirty seven','thirty eight','thirty nine','forty',
+  'forty one','forty two','forty three','forty four','forty five','forty six','forty seven','forty eight','forty nine','fifty',
+];
+
+function numEnTexto(n) {
+  const idx = Math.min(n, 50);
+  if (G.idioma === 'ca') return NUMS_CA[idx] || String(n);
+  if (G.idioma === 'en') return NUMS_EN[idx] || String(n);
+  return NUMS_ES[idx] || String(n);
+}
+
 function hablarNumero(n) {
-  const lang = G.idioma;
-  // En inglés añadimos "number" para que el TTS lo pronuncie bien en inglés
-  if (lang === 'en') hablar('number ' + n);
-  else hablar(String(n));
+  hablar(numEnTexto(n));
 }
 // ════════════════════════════════════════
 const EMOJIS = ['🐶','🐱','🐸','🌸','⭐','🍎','🌈','🦋','🎈','🍭'];
@@ -964,12 +988,36 @@ function opcionesUnicas(correcto, n, max, min=1) {
   return shuffle([...set]);
 }
 
+// Cache de voces por idioma
+let _vocesCache = {};
+function getVoz(lang) {
+  if (_vocesCache[lang]) return _vocesCache[lang];
+  const voces = speechSynthesis.getVoices();
+  // Buscar voz exacta, luego por prefijo de idioma
+  let voz = voces.find(v => v.lang === lang)
+         || voces.find(v => v.lang.startsWith(lang.split('-')[0]));
+  if (voz) _vocesCache[lang] = voz;
+  return voz || null;
+}
+// Precargar voces cuando estén disponibles (necesario en Safari)
+if ('speechSynthesis' in window) {
+  speechSynthesis.getVoices();
+  speechSynthesis.onvoiceschanged = () => { _vocesCache = {}; };
+}
+
 function hablar(txt, rate=0.85, pitch=1.1) {
   if (!('speechSynthesis' in window)) return;
   speechSynthesis.cancel();
   const u = new SpeechSynthesisUtterance(String(txt));
-  u.lang = T('voz_lang'); u.rate = rate; u.pitch = pitch;
-  speechSynthesis.speak(u);
+  const lang = T('voz_lang');
+  u.lang = lang;
+  u.rate = rate;
+  u.pitch = pitch;
+  // Intentar asignar voz explícita (crítico en Safari iOS)
+  const voz = getVoz(lang);
+  if (voz) u.voice = voz;
+  // Safari a veces necesita un pequeño delay tras cancel()
+  setTimeout(() => speechSynthesis.speak(u), 50);
 }
 
 function lanzarEstrellas(n=6) {
