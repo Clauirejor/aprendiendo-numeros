@@ -943,6 +943,14 @@ function guardarConfig() {
 
 // ════════════════════════════════════════
 // UTILIDADES
+
+// Hablar un número adaptado al idioma actual
+function hablarNumero(n) {
+  const lang = G.idioma;
+  // En inglés añadimos "number" para que el TTS lo pronuncie bien en inglés
+  if (lang === 'en') hablar('number ' + n);
+  else hablar(String(n));
+}
 // ════════════════════════════════════════
 const EMOJIS = ['🐶','🐱','🐸','🌸','⭐','🍎','🌈','🦋','🎈','🍭'];
 let emojiSesion = EMOJIS[0];
@@ -1060,12 +1068,25 @@ function cargarReconocer() {
   document.getElementById('num-reconocer').textContent=c;
   document.getElementById('feedback-reconocer').textContent='';
   document.getElementById('feedback-reconocer').className='feedback';
-  hablar(String(c));
+  hablarNumero(c);
   const ops=opcionesUnicas(c,3,G.nivel);
   const cont=document.getElementById('opciones-reconocer'); cont.innerHTML='';
   ops.forEach(n=>{
     const b=document.createElement('button'); b.className='btn-opcion'; b.textContent=n;
-    b.onclick=()=>{ if(G.respondido)return; G.respondido=true; const ok=n===c; b.classList.add(ok?'correcto':'incorrecto'); if(ok)G.aciertos++; mostrarFeedback('reconocer',ok); setTimeout(()=>siguiente('reconocer',cargarReconocer),1400); };
+    b.onclick=()=>{
+      if(G.respondido) return;
+      const ok = n===c;
+      if(!ok){
+        b.classList.add('incorrecto');
+        mostrarFeedback('reconocer', false);
+        setTimeout(()=>{ b.classList.remove('incorrecto'); document.getElementById('feedback-reconocer').textContent=''; document.getElementById('feedback-reconocer').className='feedback'; }, 1100);
+        return;
+      }
+      G.respondido=true; G.aciertos++;
+      b.classList.add('correcto');
+      mostrarFeedback('reconocer', true);
+      setTimeout(()=>siguiente('reconocer',cargarReconocer), 1400);
+    };
     cont.appendChild(b);
   });
 }
@@ -1093,7 +1114,7 @@ function cargarContar() {
       el.classList.add('contado'); contarTocados++;
       const c=document.getElementById('contador-contar');
       c.textContent=contarTocados; c.style.animation='none'; c.offsetHeight; c.style.animation='pulsarNum 0.3s ease';
-      hablar(String(contarTocados));
+      hablarNumero(contarTocados);
       if(contarTocados===contarTotal){ G.aciertos++; mostrarFeedback('contar',true); document.getElementById('btn-contar-ok').style.display='block'; }
     };
     cont.appendChild(el);
@@ -1117,7 +1138,20 @@ function cargarCantidad() {
   const oc=document.getElementById('opciones-cantidad'); oc.innerHTML='';
   ops.forEach(n=>{
     const b=document.createElement('button'); b.className='btn-opcion'; b.textContent=n;
-    b.onclick=()=>{ if(G.respondido)return; G.respondido=true; const ok=n===c; b.classList.add(ok?'correcto':'incorrecto'); if(ok)G.aciertos++; mostrarFeedback('cantidad',ok); setTimeout(()=>siguiente('cantidad',cargarCantidad),1400); };
+    b.onclick=()=>{
+      if(G.respondido) return;
+      const ok = n===c;
+      if(!ok){
+        b.classList.add('incorrecto');
+        mostrarFeedback('cantidad', false);
+        setTimeout(()=>{ b.classList.remove('incorrecto'); document.getElementById('feedback-cantidad').textContent=''; document.getElementById('feedback-cantidad').className='feedback'; }, 1100);
+        return;
+      }
+      G.respondido=true; G.aciertos++;
+      b.classList.add('correcto');
+      mostrarFeedback('cantidad', true);
+      setTimeout(()=>siguiente('cantidad',cargarCantidad), 1400);
+    };
     oc.appendChild(b);
   });
 }
@@ -1175,14 +1209,27 @@ function cargarComparar() {
     const ne=document.createElement('div'); ne.className='num-grupo'; ne.textContent=n;
     g.appendChild(og); g.appendChild(ne);
     g.onclick=()=>{
-      if(G.respondido)return; G.respondido=true;
-      const ok=idx===respCorrecta;
-      g.style.background=ok?'var(--p2)':'var(--rojo)';
+      if(G.respondido) return;
+      const ok = idx===respCorrecta;
+      if(!ok){
+        g.style.background='var(--rojo)';
+        g.querySelectorAll('*').forEach(x=>x.style.color='white');
+        mostrarFeedback('comparar', false);
+        setTimeout(()=>{
+          g.style.background='';
+          g.style.border='';
+          g.querySelectorAll('*').forEach(x=>x.style.color='');
+          document.getElementById('feedback-comparar').textContent='';
+          document.getElementById('feedback-comparar').className='feedback';
+        }, 1100);
+        return;
+      }
+      G.respondido=true; G.aciertos++;
+      g.style.background='var(--p2)';
       g.style.border='none';
       g.querySelectorAll('*').forEach(x=>x.style.color='white');
-      if(ok) G.aciertos++;
-      const extra=ok?T('feedback_comparar_ok',numCorrecto):'';
-      mostrarFeedback('comparar',ok,extra);
+      const extra=T('feedback_comparar_ok',numCorrecto);
+      mostrarFeedback('comparar',true,extra);
       setTimeout(()=>siguiente('comparar',cargarComparar),1800);
     };
     cont.appendChild(g);
@@ -1401,7 +1448,7 @@ function pulsarTecla(n, btn) {
   if (s === 'nota' || s === 'ambos') tocarNota(FREQS[n]);
   if (s === 'numero' || s === 'ambos') {
     // Si también suena la nota, esperar un poco para que no se solapen
-    setTimeout(() => hablar(String(n), 0.8, 1.0), s === 'ambos' ? 350 : 0);
+    setTimeout(() => hablarNumero(n), s === 'ambos' ? 350 : 0);
   }
 
   document.getElementById('piano-num-mostrado').textContent=n;
@@ -1447,7 +1494,7 @@ function nuevaPreguntaPiano() {
   // Reproducir la pista según preferencia
   setTimeout(()=>{
     if(s==='nota' || s==='ambos') tocarNota(FREQS[n], 0.9);
-    if(s==='numero' || s==='ambos') setTimeout(()=>hablar(T('toca_numero_voz',n)), s==='ambos'?400:0);
+    if(s==='numero' || s==='ambos') setTimeout(()=>{ if(G.idioma==='en') hablar('number '+n); else hablar(T('toca_numero_voz',n)); }, s==='ambos'?400:0);
     if(s==='ninguno') hablar(T('toca_numero_voz',n));
   },300);
 }
