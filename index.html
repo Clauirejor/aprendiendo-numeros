@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Números">
+<meta name="theme-color" content="#5B8FF9">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-512.png">
+<title>Aprendo los Números</title>
+<style>
+/* ══════════════════════════════════════════════
+   TEMAS
+══════════════════════════════════════════════ */
+:root {
+  --p1:#5B8FF9; --p1d:#3a6fe8; --p2:#52c978; --p2d:#3aad5f;
+  --acc:#FFD166; --naranja:#FF9F43; --rojo:#FF6B6B; --morado:#A78BFA; --rosa:#F472B6;
+  --bg:#F0F4FF; --surface:#FFFFFF; --surface2:#E8EEFF;
+  --txt:#2D3A5E; --txt2:#7B8EC8;
+  --r:24px; --rl:32px;
+  --sh:0 4px 20px rgba(91,143,249,0.18);
+  --shb:0 6px 0 rgba(0,0,0,0.12);
+  --font:'Nunito',system-ui,sans-serif;
+  --btn-txt:white;
+  --tile-border:none;
+}
+body.tema-lego {
+  --p1:#E3000B; --p1d:#b00008; --p2:#FFD700; --p2d:#c8ab00;
+  --acc:#006CB7; --morado:#006CB7; --rosa:#FF6800;
+  --bg:#f5f0e8; --surface:#fff9f0; --surface2:#ffe8c8;
+  --txt:#1a1a1a; --txt2:#8B5E3C;
+  --sh:0 4px 0 rgba(0,0,0,0.25);
+  --shb:0 8px 0 rgba(0,0,0,0.3);
+  --font:'Black Han Sans','Arial Black',system-ui,sans-serif;
+  --tile-border:3px solid #1a1a1a;
+}
+body.tema-stranger {
+  --p1:#b40000; --p1d:#7a0000; --p2:#d4af37; --p2d:#a07c1a;
+  --acc:#ff4444; --morado:#8B0000; --rosa:#cc0000;
+  --bg:#0a0a0a; --surface:#1a1a1a; --surface2:#0f0f0f;
+  --txt:#e8e8e8; --txt2:#888; --btn-txt:#e8e8e8;
+  --sh:0 0 20px rgba(180,0,0,0.5);
+  --shb:0 6px 0 #7a0000;
+  --font:'Courier New',monospace;
+}
+body.tema-marvel {
+  --p1:#ED1D24; --p1d:#b00010; --p2:#f5a623; --p2d:#c07800;
+  --acc:#FFD700; --morado:#6B3FA0; --rosa:#ED1D24;
+  --bg:#0a0a20; --surface:#1a1a35; --surface2:#12122a;
+  --txt:#F0F0FF; --txt2:#8888cc; --btn-txt:white;
+  --sh:0 0 20px rgba(237,29,36,0.4);
+  --shb:0 6px 0 #7a0010;
+  --font:'Arial Black','Impact',system-ui,sans-serif;
+}
+body.tema-dc {
+  --p1:#0070CE; --p1d:#004fa0; --p2:#FFD700; --p2d:#c8a800;
+  --acc:#CE0000; --morado:#4B0082; --rosa:#0070CE;
+  --bg:#0d1b2a; --surface:#1a2840; --surface2:#0d1b2a;
+  --txt:#E8F4FF; --txt2:#6a9cc8; --btn-txt:white;
+  --sh:0 0 20px rgba(0,112,206,0.4);
+  --shb:0 6px 0 #004fa0;
+  --font:'Arial Black',system-ui,sans-serif;
+}
+body.tema-disney {
+  --p1:#003DA5; --p1d:#002a7a; --p2:#FCC200; --p2d:#c89000;
+  --acc:#FF0080; --morado:#8B00FF; --rosa:#FF69B4;
+  --bg:#fff0f8; --surface:#FFFFFF; --surface2:#ffe8f5;
+  --txt:#1a1a4a; --txt2:#9966aa;
+  --sh:0 4px 20px rgba(255,0,128,0.2);
+  --shb:0 6px 0 rgba(0,0,0,0.15);
+  --font:'Georgia','Times New Roman',serif;
+}
+
+* { box-sizing:border-box; margin:0; padding:0; -webkit-tap-highlight-color:transparent; }
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--txt);
+  min-height:100vh; overflow-x:hidden; user-select:none;
+  transition: background 0.4s, color 0.4s;
+}
+
+/* ── IMPORTAR GOOGLE FONTS ── */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Black+Han+Sans&display=swap');
+
+/* ── PANTALLAS ── */
+.pantalla { display:none; flex-direction:column; align-items:center; min-height:100vh; padding:16px 16px 40px; animation:entrar 0.3s ease; }
+.pantalla.activa { display:flex; }
+@keyframes entrar { from{opacity:0;transform:scale(0.97)} to{opacity:1;transform:scale(1)} }
+
+/* ── CABECERA GLOBAL ── */
+.topbar {
+  width:100%; max-width:480px;
+  display:flex; align-items:center; justify-content:space-between;
+  margin-bottom:12px; gap:8px;
+}
+.topbar-left { display:flex; align-items:center; gap:8px; }
+.nombre-juego { font-size:15px; font-weight:700; color:var(--txt2); }
+.nombre-jugadora { font-size:16px; font-weight:800; color:var(--p1); }
+.btn-config {
+  width:40px; height:40px; border-radius:50%;
+  background:var(--surface); border:none; box-shadow:var(--sh);
+  font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:transform 0.1s;
+}
+.btn-config:active { transform:scale(0.9); }
+
+/* ── MODAL CONFIG ── */
+.overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:200; align-items:flex-end; justify-content:center; }
+.overlay.abierto { display:flex; animation:slideUp 0.3s ease; }
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+.modal-config {
+  background:var(--surface); border-radius:var(--rl) var(--rl) 0 0;
+  padding:24px 20px 40px; width:100%; max-width:480px;
+  box-shadow:0 -4px 30px rgba(0,0,0,0.2);
+}
+.modal-titulo { font-size:20px; font-weight:800; margin-bottom:20px; text-align:center; color:var(--txt); }
+.campo-nombre { display:flex; flex-direction:column; gap:8px; margin-bottom:20px; }
+.campo-nombre label { font-size:14px; font-weight:700; color:var(--txt2); }
+.campo-nombre input {
+  padding:14px 18px; border-radius:16px;
+  border:2px solid var(--surface2); background:var(--bg);
+  font-size:18px; font-weight:700; color:var(--txt); font-family:var(--font);
+  outline:none; transition:border-color 0.2s;
+}
+.campo-nombre input:focus { border-color:var(--p1); }
+.temas-titulo { font-size:14px; font-weight:700; color:var(--txt2); margin-bottom:12px; }
+.grid-temas { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:20px; }
+.btn-tema {
+  padding:10px 6px; border-radius:16px; border:var(--tile-border);
+  background:var(--surface2); cursor:pointer;
+  display:flex; flex-direction:column; align-items:center; gap:6px;
+  font-size:11px; font-weight:700; color:var(--txt);
+  transition:all 0.2s; font-family:var(--font);
+}
+.btn-tema .tema-icon { font-size:28px; }
+.btn-tema.activo { background:var(--p1); color:white; transform:scale(1.05); }
+.btn-guardar {
+  width:100%; padding:16px; border-radius:20px; border:none;
+  background:var(--p1); color:white; font-size:18px; font-weight:800;
+  cursor:pointer; box-shadow:var(--shb); font-family:var(--font);
+  transition:transform 0.1s;
+}
+.btn-guardar:active { transform:translateY(3px); }
+
+/* ── MENÚ PRINCIPAL ── */
+.logo-principal { font-size:70px; margin:10px 0 6px; animation:flotar 3s ease-in-out infinite; }
+@keyframes flotar { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+.titulo-principal { font-size:30px; font-weight:900; text-align:center; color:var(--txt); }
+.subtitulo-principal { font-size:16px; color:var(--txt2); margin-bottom:16px; }
+
+.selector-nivel { background:var(--surface); border-radius:var(--rl); padding:14px 16px; width:100%; max-width:420px; box-shadow:var(--sh); margin-bottom:20px; }
+.selector-nivel p { font-size:14px; font-weight:700; color:var(--txt2); margin-bottom:10px; text-align:center; }
+.botones-nivel { display:flex; gap:8px; justify-content:center; }
+.btn-nivel { flex:1; padding:10px 4px; border-radius:14px; border:3px solid transparent; background:var(--surface2); font-size:13px; font-weight:800; color:var(--txt2); cursor:pointer; transition:all 0.2s; font-family:var(--font); }
+.btn-nivel.activo { background:var(--p1); color:white; border-color:var(--p1d); transform:translateY(-2px); box-shadow:0 4px 0 var(--p1d); }
+
+.grid-actividades { display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100%; max-width:420px; }
+.btn-actividad { background:var(--surface); border:var(--tile-border); border-radius:var(--rl); padding:18px 12px; display:flex; flex-direction:column; align-items:center; gap:8px; box-shadow:var(--shb); cursor:pointer; transition:transform 0.15s,box-shadow 0.15s; position:relative; overflow:hidden; }
+.btn-actividad:active { transform:translateY(4px); box-shadow:0 2px 0 rgba(0,0,0,0.12); }
+.btn-actividad .icono { font-size:38px; }
+.btn-actividad .nombre { font-size:13px; font-weight:800; color:var(--txt); text-align:center; line-height:1.2; }
+.btn-actividad::before { content:''; position:absolute; top:0; left:0; right:0; height:5px; border-radius:var(--rl) var(--rl) 0 0; }
+.act-piano::before    { background:#FF6B6B; }
+.act-reconocer::before{ background:var(--p1); }
+.act-contar::before   { background:var(--p2); }
+.act-cantidad::before { background:var(--naranja); }
+.act-ordenar::before  { background:var(--morado); }
+.act-comparar::before { background:var(--rosa); }
+.act-sumas::before    { background:#06D6A0; }
+.act-multi::before    { background:#FFD166; }
+.act-trazar::before   { background:#FF9F43; }
+
+/* ── CABECERA ACTIVIDAD ── */
+.cabecera { width:100%; max-width:480px; display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+.btn-volver { width:52px; height:52px; border-radius:50%; background:var(--surface); border:none; box-shadow:var(--sh); font-size:22px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:transform 0.1s; color:var(--txt); }
+.btn-volver:active { transform:scale(0.9); }
+.titulo-cabecera { font-size:20px; font-weight:800; color:var(--txt); }
+.nivel-badge { background:var(--p1); color:white; font-size:13px; font-weight:700; padding:7px 14px; border-radius:18px; }
+
+/* ── ÁREA DE JUEGO ── */
+.area-juego { width:100%; max-width:480px; display:flex; flex-direction:column; align-items:center; gap:16px; flex:1; }
+.pregunta-texto { font-size:22px; font-weight:800; text-align:center; color:var(--txt); line-height:1.3; }
+.numero-grande { font-size:130px; font-weight:900; line-height:1; color:var(--p1); text-shadow:0 6px 0 rgba(0,0,0,0.1); animation:pulsarNum 0.4s ease; }
+@keyframes pulsarNum { 0%{transform:scale(0.7)} 70%{transform:scale(1.08)} 100%{transform:scale(1)} }
+.fila-numero { display:flex; align-items:center; gap:14px; justify-content:center; }
+.barra-progreso { width:100%; background:var(--surface2); border-radius:10px; height:12px; overflow:hidden; }
+.barra-relleno { height:100%; background:linear-gradient(90deg,var(--p1),var(--morado)); border-radius:10px; transition:width 0.4s ease; }
+.feedback { font-size:24px; font-weight:900; text-align:center; min-height:40px; transition:all 0.3s; }
+.feedback.ok  { color:var(--p2); }
+.feedback.mal { color:var(--rojo); }
+
+/* ── OPCIONES ── */
+.opciones { display:flex; gap:14px; justify-content:center; flex-wrap:wrap; width:100%; }
+.btn-opcion { min-width:88px; min-height:88px; border-radius:var(--rl); border:var(--tile-border); background:var(--surface); font-size:46px; font-weight:900; color:var(--txt); cursor:pointer; box-shadow:var(--shb); transition:transform 0.15s,box-shadow 0.15s; display:flex; align-items:center; justify-content:center; font-family:var(--font); }
+.btn-opcion:active { transform:translateY(4px); box-shadow:0 2px 0 rgba(0,0,0,0.12); }
+.btn-opcion.correcto { background:var(--p2); color:white; border-color:var(--p2d); animation:celebrar 0.5s ease; }
+.btn-opcion.incorrecto { background:var(--rojo); color:white; animation:temblar 0.4s ease; }
+@keyframes celebrar { 0%{transform:scale(1)} 40%{transform:scale(1.2)} 100%{transform:scale(1)} }
+@keyframes temblar  { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+
+/* ── OBJETOS ── */
+.area-objetos { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; padding:16px; background:var(--surface); border-radius:var(--rl); box-shadow:var(--sh); width:100%; }
+.objeto { font-size:48px; cursor:pointer; transition:transform 0.15s; border-radius:14px; padding:4px; }
+.objeto.contado { filter:grayscale(0.6) opacity(0.45); transform:scale(0.82); }
+.objeto:not(.contado):active { transform:scale(0.82); }
+.contador-toque { font-size:68px; font-weight:900; color:var(--p1); animation:pulsarNum 0.3s ease; background:var(--surface); border-radius:50%; width:110px; height:110px; display:flex; align-items:center; justify-content:center; box-shadow:var(--sh); }
+
+/* ── TRAZAR ── */
+.area-trazar { background:var(--surface); border-radius:var(--rl); box-shadow:var(--sh); padding:10px; width:100%; }
+#canvas-trazar { display:block; border-radius:18px; background:var(--bg); touch-action:none; width:100%; }
+.btn-limpiar { margin-top:10px; padding:12px 24px; border-radius:18px; border:none; background:var(--surface2); color:var(--txt2); font-size:15px; font-weight:700; cursor:pointer; font-family:var(--font); }
+
+/* ── ORDENAR ── */
+.secuencia { display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap; width:100%; }
+.ficha-numero { width:74px; height:74px; border-radius:18px; background:var(--surface); box-shadow:var(--sh); font-size:36px; font-weight:900; color:var(--txt); display:flex; align-items:center; justify-content:center; }
+.ficha-numero.vacia { border:4px dashed var(--p1); background:var(--surface2); color:transparent; }
+
+/* ── COMPARAR ── */
+.grupos-comparar { display:flex; gap:16px; width:100%; justify-content:center; }
+.grupo-comparar { flex:1; max-width:150px; background:var(--surface); border-radius:var(--rl); box-shadow:var(--sh); padding:14px 10px; display:flex; flex-direction:column; align-items:center; gap:8px; cursor:pointer; transition:all 0.2s; border:var(--tile-border); }
+.grupo-comparar .objetos-grupo { display:flex; flex-wrap:wrap; justify-content:center; gap:5px; min-height:70px; align-content:center; }
+.grupo-comparar .obj { font-size:32px; }
+.grupo-comparar .num-grupo { font-size:28px; font-weight:900; color:var(--txt); }
+
+/* ── PIANO ── */
+.piano-container { width:100%; background:var(--surface); border-radius:var(--rl); box-shadow:var(--sh); padding:16px 10px; }
+.piano-teclas { display:flex; gap:6px; justify-content:center; flex-wrap:wrap; }
+.tecla-piano {
+  width:64px; height:90px; border-radius:12px; border:none;
+  display:flex; flex-direction:column; align-items:center; justify-content:flex-end;
+  padding-bottom:10px; cursor:pointer; font-size:22px; font-weight:900;
+  font-family:var(--font); box-shadow:var(--shb);
+  transition:transform 0.08s, box-shadow 0.08s;
+  color:white; position:relative; overflow:hidden;
+}
+.tecla-piano:active, .tecla-piano.pulsada { transform:translateY(5px); box-shadow:0 1px 0 rgba(0,0,0,0.2); }
+.tecla-piano .nota-label { font-size:11px; font-weight:700; opacity:0.85; margin-bottom:2px; }
+.nota-animada { position:absolute; top:10px; font-size:24px; animation:notaSubir 0.8s ease-out forwards; pointer-events:none; }
+@keyframes notaSubir { 0%{opacity:1;transform:translateY(0)scale(1)} 100%{opacity:0;transform:translateY(-50px)scale(1.4)} }
+.piano-display { background:var(--bg); border-radius:16px; padding:12px 16px; text-align:center; margin-bottom:14px; }
+.piano-display .num-mostrado { font-size:64px; font-weight:900; color:var(--p1); line-height:1; }
+.piano-display .nom-nota { font-size:16px; color:var(--txt2); font-weight:700; margin-top:4px; }
+.piano-modo { display:flex; gap:10px; margin-bottom:14px; justify-content:center; }
+.btn-piano-modo { padding:10px 18px; border-radius:14px; border:none; background:var(--surface2); color:var(--txt2); font-size:14px; font-weight:700; cursor:pointer; font-family:var(--font); transition:all 0.2s; }
+.btn-piano-modo.activo { background:var(--p1); color:white; }
+.piano-pregunta { background:var(--bg); border-radius:16px; padding:12px 16px; text-align:center; margin-bottom:10px; font-size:18px; font-weight:800; color:var(--txt); }
+.piano-sonido { margin-bottom:12px; }
+.piano-sonido p { font-size:13px; font-weight:700; color:var(--txt2); margin-bottom:8px; text-align:center; }
+.piano-sonido-opts { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+.btn-sonido { padding:9px 14px; border-radius:14px; border:2px solid var(--surface2); background:var(--surface2); color:var(--txt2); font-size:13px; font-weight:700; cursor:pointer; font-family:var(--font); transition:all 0.2s; display:flex; align-items:center; gap:5px; }
+.btn-sonido.activo { background:var(--p1); color:white; border-color:var(--p1d); }
+
+/* ── SUMAS/RESTAS ── */
+.operacion-display { background:var(--surface); border-radius:var(--rl); box-shadow:var(--sh); padding:24px 20px; width:100%; text-align:center; }
+.operacion-texto { font-size:52px; font-weight:900; color:var(--txt); letter-spacing:4px; }
+.operacion-texto .signo { color:var(--p1); }
+.operacion-texto .resultado-hueco { color:var(--p1); border-bottom:4px solid var(--p1); min-width:50px; display:inline-block; }
+.ayuda-visual { display:flex; gap:6px; justify-content:center; flex-wrap:wrap; margin-top:12px; }
+.bolita { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; }
+.bolita.a { background:var(--p1); }
+.bolita.b { background:var(--rojo); }
+.bolita.tachada { opacity:0.25; position:relative; }
+.bolita.tachada::after { content:'✕'; position:absolute; font-size:20px; color:var(--rojo); }
+
+/* ── MULTIPLICACIÓN ── */
+.multi-display { background:var(--surface); border-radius:var(--rl); box-shadow:var(--sh); padding:20px; width:100%; }
+.multi-texto { font-size:44px; font-weight:900; color:var(--txt); text-align:center; margin-bottom:14px; }
+.multi-grupos { display:flex; gap:12px; justify-content:center; flex-wrap:wrap; }
+.multi-grupo { background:var(--surface2); border-radius:18px; padding:10px 12px; display:flex; flex-wrap:wrap; gap:4px; justify-content:center; max-width:120px; }
+.multi-grupo .obj { font-size:26px; }
+.multi-sep { font-size:32px; font-weight:900; color:var(--txt2); display:flex; align-items:center; }
+.division-display { text-align:center; }
+.division-linea { display:flex; align-items:center; justify-content:center; gap:16px; flex-wrap:wrap; }
+.div-box { background:var(--surface); border-radius:20px; padding:16px 22px; box-shadow:var(--sh); font-size:44px; font-weight:900; color:var(--txt); display:flex; align-items:center; justify-content:center; }
+.div-signo { font-size:44px; font-weight:900; color:var(--p1); }
+
+/* ── BOTONES ── */
+.btn-principal { padding:18px 36px; border-radius:var(--rl); border:none; background:var(--p1); color:white; font-size:18px; font-weight:800; cursor:pointer; box-shadow:var(--shb); transition:transform 0.1s,box-shadow 0.1s; width:100%; max-width:300px; font-family:var(--font); }
+.btn-principal:active { transform:translateY(4px); box-shadow:0 2px 0 var(--p1d); }
+.btn-principal.verde { background:var(--p2); box-shadow:0 6px 0 var(--p2d); }
+.btn-principal.verde:active { box-shadow:0 2px 0 var(--p2d); }
+
+/* ── PANTALLA FINAL ── */
+.pantalla-final { text-align:center; display:flex; flex-direction:column; align-items:center; gap:18px; justify-content:center; flex:1; }
+.estrellas { font-size:56px; letter-spacing:6px; }
+.mensaje-final { font-size:26px; font-weight:800; color:var(--txt); }
+.puntuacion { font-size:18px; color:var(--txt2); font-weight:700; }
+
+/* ── ESTRELLAS VOLANDO ── */
+.estrellas-animadas { position:fixed; pointer-events:none; top:0; left:0; width:100%; height:100%; z-index:100; }
+.estrella-volando { position:absolute; font-size:30px; animation:volar 1s ease-out forwards; }
+@keyframes volar { 0%{opacity:1;transform:translateY(0)scale(1)} 100%{opacity:0;transform:translateY(-110px)scale(1.5)} }
+
+.icono-hablar { width:48px; height:48px; border-radius:50%; background:var(--p1); border:none; color:white; font-size:20px; cursor:pointer; box-shadow:var(--sh); display:flex; align-items:center; justify-content:center; transition:transform 0.1s; }
+.icono-hablar:active { transform:scale(0.88); }
+</style>
+</head>
+<body>
+
+<div class="estrellas-animadas" id="estrellas-container"></div>
+
+<!-- ═══════════════════ MODAL CONFIG ═══════════════════ -->
+<div class="overlay" id="overlay-config" onclick="if(event.target===this)cerrarConfig()">
+  <div class="modal-config">
+    <div class="modal-titulo">⚙️ Configuración</div>
+    <div class="campo-nombre">
+      <label>Nombre de la jugadora:</label>
+      <input type="text" id="input-nombre" placeholder="Escribe el nombre..." maxlength="20">
+    </div>
+    <div class="temas-titulo">Apariencia:</div>
+    <div class="grid-temas">
+      <button class="btn-tema activo" data-tema="normal" onclick="seleccionarTema(this,'normal')">
+        <span class="tema-icon">🌈</span><span>Normal</span>
+      </button>
+      <button class="btn-tema" data-tema="lego" onclick="seleccionarTema(this,'lego')">
+        <span class="tema-icon">🧱</span><span>LEGO</span>
+      </button>
+      <button class="btn-tema" data-tema="stranger" onclick="seleccionarTema(this,'stranger')">
+        <span class="tema-icon">🔦</span><span>Stranger Things</span>
+      </button>
+      <button class="btn-tema" data-tema="marvel" onclick="seleccionarTema(this,'marvel')">
+        <span class="tema-icon">⚡</span><span>Marvel</span>
+      </button>
+      <button class="btn-tema" data-tema="dc" onclick="seleccionarTema(this,'dc')">
+        <span class="tema-icon">🦇</span><span>DC Comics</span>
+      </button>
+      <button class="btn-tema" data-tema="disney" onclick="seleccionarTema(this,'disney')">
+        <span class="tema-icon">✨</span><span>Disney</span>
+      </button>
+    </div>
+    <button class="btn-guardar" onclick="guardarConfig()">✅ Guardar</button>
+  </div>
+</div>
+
+<!-- ═══════════════════ MENÚ PRINCIPAL ═══════════════════ -->
+<div class="pantalla activa" id="pantalla-menu">
+  <div class="topbar" style="max-width:420px">
+    <div class="topbar-left">
+      <span class="nombre-juego">Juego de:</span>
+      <span class="nombre-jugadora" id="display-nombre">¿Quién juega?</span>
+    </div>
+    <button class="btn-config" onclick="abrirConfig()">⚙️</button>
+  </div>
+
+  <div class="logo-principal">🔢</div>
+  <h1 class="titulo-principal">Los Números</h1>
+  <p class="subtitulo-principal">¡Vamos a aprender!</p>
+
+  <div class="selector-nivel">
+    <p>¿Hasta qué número?</p>
+    <div class="botones-nivel">
+      <button class="btn-nivel activo" onclick="setNivel(10,this)">1–10</button>
+      <button class="btn-nivel" onclick="setNivel(20,this)">1–20</button>
+      <button class="btn-nivel" onclick="setNivel(50,this)">1–50</button>
+      <button class="btn-nivel" onclick="setNivel(100,this)">1–100</button>
+    </div>
+  </div>
+
+  <div class="grid-actividades">
+    <button class="btn-actividad act-piano"    onclick="iniciarActividad('piano')">
+      <span class="icono">🎹</span><span class="nombre">Piano de números</span>
+    </button>
+    <button class="btn-actividad act-reconocer" onclick="iniciarActividad('reconocer')">
+      <span class="icono">👀</span><span class="nombre">Reconocer números</span>
+    </button>
+    <button class="btn-actividad act-contar"   onclick="iniciarActividad('contar')">
+      <span class="icono">✋</span><span class="nombre">Contar objetos</span>
+    </button>
+    <button class="btn-actividad act-cantidad" onclick="iniciarActividad('cantidad')">
+      <span class="icono">🔍</span><span class="nombre">¿Cuántos hay?</span>
+    </button>
+    <button class="btn-actividad act-ordenar"  onclick="iniciarActividad('ordenar')">
+      <span class="icono">🔢</span><span class="nombre">¿Qué sigue?</span>
+    </button>
+    <button class="btn-actividad act-comparar" onclick="iniciarActividad('comparar')">
+      <span class="icono">⚖️</span><span class="nombre">Más o menos</span>
+    </button>
+    <button class="btn-actividad act-sumas"    onclick="iniciarActividad('sumas')">
+      <span class="icono">➕</span><span class="nombre">Sumas y restas</span>
+    </button>
+    <button class="btn-actividad act-multi"    onclick="iniciarActividad('multi')">
+      <span class="icono">✖️</span><span class="nombre">× y ÷ primeros pasos</span>
+    </button>
+    <button class="btn-actividad act-trazar"   onclick="iniciarActividad('trazar')" style="grid-column:span 2">
+      <span class="icono">✏️</span><span class="nombre">Escribir números con el dedo</span>
+    </button>
+  </div>
+</div>
+
+<!-- ═══════════════════ RECONOCER ═══════════════════ -->
+<div class="pantalla" id="pantalla-reconocer">
+  <div class="topbar"><button class="btn-volver" onclick="volverMenu()">←</button><span class="titulo-cabecera">Reconocer</span><span class="nivel-badge" id="badge-reconocer">1/6</span></div>
+  <div class="area-juego">
+    <div class="barra-progreso"><div class="barra-relleno" id="barra-reconocer" style="width:0%"></div></div>
+    <p class="pregunta-texto">¿Qué número es este?</p>
+    <div class="fila-numero">
+      <div class="numero-grande" id="num-reconocer">3</div>
+      <button class="icono-hablar" onclick="hablar(document.getElementById('num-reconocer').textContent)">🔊</button>
+    </div>
+    <div class="opciones" id="opciones-reconocer"></div>
+    <div class="feedback" id="feedback-reconocer"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ CONTAR ═══════════════════ -->
+<div class="pantalla" id="pantalla-contar">
+  <div class="topbar"><button class="btn-volver" onclick="volverMenu()">←</button><span class="titulo-cabecera">Contar</span><span class="nivel-badge" id="badge-contar">1/6</span></div>
+  <div class="area-juego">
+    <div class="barra-progreso"><div class="barra-relleno" id="barra-contar" style="width:0%"></div></div>
+    <p class="pregunta-texto">Toca cada objeto para contar</p>
+    <div class="area-objetos" id="objetos-contar"></div>
+    <div class="contador-toque" id="contador-contar">0</div>
+    <div class="feedback" id="feedback-contar"></div>
+    <button class="btn-principal" id="btn-contar-ok" style="display:none" onclick="siguiente('contar',()=>cargarContar())">¡Siguiente! →</button>
+  </div>
+</div>
+
+<!-- ═══════════════════ CANTIDAD ═══════════════════ -->
+<div class="pantalla" id="pantalla-cantidad">
+  <div class="topbar"><button class="btn-volver" onclick="volverMenu()">←</button><span class="titulo-cabecera">¿Cuántos hay?</span><span class="nivel-badge" id="badge-cantidad">1/6</span></div>
+  <div class="area-juego">
+    <div class="barra-progreso"><div class="barra-relleno" id="barra-cantidad" style="width:0%"></div></div>
+    <p class="pregunta-texto">¿Cuántos hay?</p>
+    <div class="area-objetos" id="objetos-cantidad"></div>
+    <div class="opciones" id="opciones-cantidad"></div>
+    <div class="feedback" id="feedback-cantidad"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ ORDENAR ═══════════════════ -->
+<div class="pantalla" id="pantalla-ordenar">
+  <div class="topbar"><button class="btn-volver" onclick="volverMenu()">←</button><span class="titulo-cabecera">¿Qué sigue?</span><span class="nivel-badge" id="badge-ordenar">1/6</span></div>
+  <div class="area-juego">
+    <div class="barra-progreso"><div class="barra-relleno" id="barra-ordenar" style="width:0%"></div></div>
+    <p class="pregunta-texto">¿Qué número va después?</p>
+    <div class="secuencia" id="secuencia-ordenar"></div>
+    <div class="opciones" id="opciones-ordenar"></div>
+    <div class="feedback" id="feedback-ordenar"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ COMPARAR ═══════════════════ -->
+<div class="pantalla" id="pantalla-comparar">
+  <div class="topbar"><button class="btn-volver" onclick="volverMenu()">←</button><span class="titulo-cabecera">Más o menos</span><span class="nivel-badge" id="badge-comparar">1/6</span></div>
+  <div class="area-juego">
+    <div class="barra-progreso"><div class="barra-relleno" id="barra-comparar" style="width:0%"></div></div>
+    <p class="pregunta-texto" id="preg-comparar">¿Cuál grupo tiene más?</p>
+    <div class="grupos-comparar" id="grupos-comparar"></div>
+    <div class="feedback" id="feedback-comparar"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ SUMAS Y RESTAS ═══════════════════ -->
+<div class="pantalla" id="pantalla-sumas">
+  <div class="topbar"><button class="btn-volver" onclick="volverMenu()">←</button><span class="titulo-cabecera">Sumas y Restas</span><span class="nivel-badge" id="badge-sumas">1/6</span></div>
+  <div class="area-juego">
+    <div class="barra-progreso"><div class="barra-relleno" id="barra-sumas" style="width:0%"></div></div>
+    <div class="operacion-display" id="operacion-sumas"></div>
+    <div class="opciones" id="opciones-sumas"></div>
+    <div class="feedback" id="feedback-sumas"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ MULTIPLICACIÓN Y DIVISIÓN ═══════════════════ -->
+<div class="pantalla" id="pantalla-multi">
+  <div class="topbar"><button class="btn-volver" onclick="volverMenu()">←</button><span class="titulo-cabecera">× y ÷ primeros pasos</span><span class="nivel-badge" id="badge-multi">1/6</span></div>
+  <div class="area-juego">
+    <div class="barra-progreso"><div class="barra-relleno" id="barra-multi" style="width:0%"></div></div>
+    <p class="pregunta-texto" id="preg-multi">¿Cuánto es?</p>
+    <div id="display-multi" style="width:100%"></div>
+    <div class="opciones" id="opciones-multi"></div>
+    <div class="feedback" id="feedback-multi"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PIANO ═══════════════════ -->
+<div class="pantalla" id="pantalla-piano">
+  <div class="topbar"><button class="btn-volver" onclick="volverMenu()">←</button><span class="titulo-cabecera">Piano de Números</span><span>🎵</span></div>
+  <div class="area-juego">
+    <div class="piano-modo">
+      <button class="btn-piano-modo activo" onclick="setPianoModo('libre',this)">🎹 Libre</button>
+      <button class="btn-piano-modo" onclick="setPianoModo('escuchar',this)">👂 Escucha y toca</button>
+    </div>
+    <div class="piano-sonido">
+      <p>🔊 Al tocar, escuchar:</p>
+      <div class="piano-sonido-opts">
+        <button class="btn-sonido" data-sonido="numero" onclick="setSonido('numero',this)">🗣️ Número</button>
+        <button class="btn-sonido activo" data-sonido="nota" onclick="setSonido('nota',this)">🎵 Nota</button>
+        <button class="btn-sonido" data-sonido="ambos" onclick="setSonido('ambos',this)">🗣️🎵 Ambos</button>
+        <button class="btn-sonido" data-sonido="ninguno" onclick="setSonido('ninguno',this)">🔇 Ninguno</button>
+      </div>
+    </div>
+    <div class="piano-display">
+      <div class="num-mostrado" id="piano-num-mostrado">—</div>
+      <div class="nom-nota" id="piano-nom-nota">Toca una tecla</div>
+    </div>
+    <div id="piano-pregunta-area" style="display:none">
+      <div class="piano-pregunta" id="piano-pregunta-txt">Escucha y toca el número correcto</div>
+    </div>
+    <div class="piano-container">
+      <div class="piano-teclas" id="piano-teclas"></div>
+    </div>
+    <div class="feedback" id="feedback-piano"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ TRAZAR ═══════════════════ -->
+<div class="pantalla" id="pantalla-trazar">
+  <div class="topbar"><button class="btn-volver" onclick="volverMenu()">←</button><span class="titulo-cabecera">Escribir</span><span class="nivel-badge" id="badge-trazar">1/6</span></div>
+  <div class="area-juego">
+    <div class="barra-progreso"><div class="barra-relleno" id="barra-trazar" style="width:0%"></div></div>
+    <p class="pregunta-texto">¡Dibuja el número con el dedo!</p>
+    <div class="fila-numero">
+      <div class="numero-grande" id="num-trazar" style="font-size:72px">3</div>
+      <button class="icono-hablar" onclick="hablar(document.getElementById('num-trazar').textContent)">🔊</button>
+    </div>
+    <div class="area-trazar"><canvas id="canvas-trazar" height="260"></canvas></div>
+    <div style="display:flex;gap:10px;width:100%;justify-content:center">
+      <button class="btn-limpiar" onclick="limpiarCanvas()">🗑️ Borrar</button>
+      <button class="btn-principal verde" style="flex:1;max-width:180px" onclick="siguienteTrazo()">¡Siguiente! →</button>
+    </div>
+    <div class="feedback" id="feedback-trazar"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════ FINAL ═══════════════════ -->
+<div class="pantalla" id="pantalla-final">
+  <div class="area-juego pantalla-final">
+    <div class="logo-principal">🏆</div>
+    <div class="estrellas" id="estrellas-final">⭐⭐⭐</div>
+    <p class="mensaje-final" id="mensaje-final">¡Muy bien!</p>
+    <p class="puntuacion" id="puntuacion-final">5 de 6 correctas</p>
+    <button class="btn-principal verde" onclick="volverMenu()">Jugar otra vez</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════
+// ESTADO Y CONFIG
+// ════════════════════════════════════════
+const G = {
+  nivel: 10,
+  actividad: null,
+  pregunta: 0,
+  total: 6,
+  aciertos: 0,
+  respondido: false,
+  nombre: '',
+  tema: 'normal',
+  pianoModo: 'libre',
+  pianoPreguntaNum: null,
+  pianoSonido: 'nota'
+};
+
+// Guardar/cargar datos
+function guardarLocal() {
+  try { localStorage.setItem('numeros_cfg', JSON.stringify({nombre:G.nombre, tema:G.tema, nivel:G.nivel})); } catch(e){}
+}
+function cargarLocal() {
+  try {
+    const d = JSON.parse(localStorage.getItem('numeros_cfg')||'{}');
+    if (d.nombre) { G.nombre = d.nombre; document.getElementById('display-nombre').textContent = d.nombre; }
+    if (d.tema)   aplicarTema(d.tema);
+    if (d.nivel)  { G.nivel = d.nivel; document.querySelectorAll('.btn-nivel').forEach(b => { b.classList.toggle('activo', parseInt(b.textContent.split('–')[1]) === d.nivel); }); }
+  } catch(e){}
+}
+
+// ════════════════════════════════════════
+// CONFIG Y TEMAS
+// ════════════════════════════════════════
+let temaSeleccionado = 'normal';
+
+function abrirConfig() {
+  document.getElementById('input-nombre').value = G.nombre;
+  document.getElementById('overlay-config').classList.add('abierto');
+}
+function cerrarConfig() { document.getElementById('overlay-config').classList.remove('abierto'); }
+
+function seleccionarTema(btn, tema) {
+  temaSeleccionado = tema;
+  document.querySelectorAll('.btn-tema').forEach(b => b.classList.remove('activo'));
+  btn.classList.add('activo');
+}
+
+function aplicarTema(tema) {
+  G.tema = tema;
+  document.body.className = tema === 'normal' ? '' : 'tema-'+tema;
+  document.querySelectorAll('.btn-tema').forEach(b => b.classList.toggle('activo', b.dataset.tema === tema));
+}
+
+function guardarConfig() {
+  const nombre = document.getElementById('input-nombre').value.trim() || 'amiga';
+  G.nombre = nombre;
+  document.getElementById('display-nombre').textContent = nombre;
+  aplicarTema(temaSeleccionado);
+  guardarLocal();
+  cerrarConfig();
+  hablar('¡Hola, ' + nombre + '!');
+}
+
+// ════════════════════════════════════════
+// UTILIDADES
+// ════════════════════════════════════════
+const EMOJIS = ['🐶','🐱','🐸','🌸','⭐','🍎','🌈','🦋','🎈','🍭'];
+let emojiSesion = EMOJIS[0];
+
+function numRand(max, min=1) { return Math.floor(Math.random()*(max-min+1))+min; }
+function shuffle(arr) { for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];} return arr; }
+function opcionesUnicas(correcto, n, max, min=1) {
+  const set = new Set([correcto]);
+  let intentos = 0;
+  while(set.size < Math.min(n, max-min+1) && intentos++ < 50) set.add(numRand(max, min));
+  return shuffle([...set]);
+}
+
+function hablar(txt, rate=0.85, pitch=1.1) {
+  if (!('speechSynthesis' in window)) return;
+  speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(String(txt));
+  u.lang='es-ES'; u.rate=rate; u.pitch=pitch;
+  speechSynthesis.speak(u);
+}
+
+function lanzarEstrellas(n=6) {
+  const c = document.getElementById('estrellas-container');
+  const em = ['⭐','🌟','✨','🎉','🎊'];
+  for(let i=0;i<n;i++){
+    const e=document.createElement('div'); e.className='estrella-volando';
+    e.textContent=em[Math.floor(Math.random()*em.length)];
+    e.style.left=(10+Math.random()*80)+'%'; e.style.top=(30+Math.random()*50)+'%';
+    e.style.animationDelay=(Math.random()*0.5)+'s';
+    c.appendChild(e); setTimeout(()=>e.remove(),1400);
+  }
+}
+
+function mostrarFeedback(id, ok, extra='') {
+  const el = document.getElementById('feedback-'+id);
+  if(ok){
+    el.textContent = ['¡Muy bien! 🎉','¡Genial! ⭐','¡Correcto! 🌟','¡Bravo! 🏆','¡Fantástico! 🎈'][Math.floor(Math.random()*5)] + (extra?' '+extra:'');
+    el.className='feedback ok'; lanzarEstrellas(); hablar('¡Muy bien!' + (extra?'. '+extra:''));
+  } else {
+    el.textContent='¡Inténtalo de nuevo! 💪'; el.className='feedback mal'; hablar('Inténtalo otra vez');
+  }
+}
+
+function actualizarProgreso(id, actual, total) {
+  document.getElementById('badge-'+id).textContent=`${actual}/${total}`;
+  document.getElementById('barra-'+id).style.width=`${(actual/total)*100}%`;
+}
+
+function setNivel(n, btn) {
+  G.nivel=n;
+  document.querySelectorAll('.btn-nivel').forEach(b=>b.classList.remove('activo'));
+  btn.classList.add('activo');
+  guardarLocal();
+}
+
+function volverMenu() {
+  mostrarPantalla('pantalla-menu');
+  G.pregunta=0; G.aciertos=0; G.respondido=false;
+  emojiSesion=EMOJIS[Math.floor(Math.random()*EMOJIS.length)];
+}
+function mostrarPantalla(id) { document.querySelectorAll('.pantalla').forEach(p=>p.classList.remove('activa')); document.getElementById(id).classList.add('activa'); }
+
+function mostrarFinal() {
+  const pct=G.aciertos/G.total;
+  const nombre=G.nombre||'campeona';
+  document.getElementById('estrellas-final').textContent=pct>=0.8?'⭐⭐⭐':pct>=0.5?'⭐⭐':'⭐';
+  const msg=pct>=0.8?`¡Eres increíble, ${nombre}!`:pct>=0.5?`¡Muy bien, ${nombre}!`:`¡Sigue practicando, ${nombre}!`;
+  document.getElementById('mensaje-final').textContent=msg;
+  document.getElementById('puntuacion-final').textContent=`${G.aciertos} de ${G.total} correctas`;
+  mostrarPantalla('pantalla-final');
+  lanzarEstrellas(10); setTimeout(lanzarEstrellas,700); setTimeout(lanzarEstrellas,1400);
+  hablar(msg);
+}
+
+function siguiente(id, cargarFn) {
+  G.pregunta++; G.respondido=false;
+  if(G.pregunta>=G.total){ mostrarFinal(); return; }
+  actualizarProgreso(id, G.pregunta+1, G.total);
+  cargarFn();
+}
+
+function iniciarActividad(nombre) {
+  G.actividad=nombre; G.total=6; G.pregunta=0; G.aciertos=0; G.respondido=false;
+  emojiSesion=EMOJIS[Math.floor(Math.random()*EMOJIS.length)];
+  ({
+    reconocer: iniciarReconocer,
+    contar:    iniciarContar,
+    cantidad:  iniciarCantidad,
+    ordenar:   iniciarOrdenar,
+    comparar:  iniciarComparar,
+    sumas:     iniciarSumas,
+    multi:     iniciarMulti,
+    piano:     iniciarPiano,
+    trazar:    iniciarTrazo
+  })[nombre]();
+}
+
+// ════════════════════════════════════════
+// RECONOCER
+// ════════════════════════════════════════
+function iniciarReconocer() {
+  mostrarPantalla('pantalla-reconocer');
+  actualizarProgreso('reconocer',1,G.total); cargarReconocer();
+}
+function cargarReconocer() {
+  const c=numRand(G.nivel);
+  document.getElementById('num-reconocer').textContent=c;
+  document.getElementById('feedback-reconocer').textContent='';
+  document.getElementById('feedback-reconocer').className='feedback';
+  hablar(String(c));
+  const ops=opcionesUnicas(c,3,G.nivel);
+  const cont=document.getElementById('opciones-reconocer'); cont.innerHTML='';
+  ops.forEach(n=>{
+    const b=document.createElement('button'); b.className='btn-opcion'; b.textContent=n;
+    b.onclick=()=>{ if(G.respondido)return; G.respondido=true; const ok=n===c; b.classList.add(ok?'correcto':'incorrecto'); if(ok)G.aciertos++; mostrarFeedback('reconocer',ok); setTimeout(()=>siguiente('reconocer',cargarReconocer),1400); };
+    cont.appendChild(b);
+  });
+}
+
+// ════════════════════════════════════════
+// CONTAR
+// ════════════════════════════════════════
+let contarTocados=0, contarTotal=0;
+function iniciarContar() {
+  mostrarPantalla('pantalla-contar');
+  actualizarProgreso('contar',1,G.total); cargarContar();
+}
+function cargarContar() {
+  contarTocados=0; contarTotal=Math.min(numRand(G.nivel), 12);
+  document.getElementById('contador-contar').textContent='0';
+  document.getElementById('feedback-contar').textContent='';
+  document.getElementById('feedback-contar').className='feedback';
+  document.getElementById('btn-contar-ok').style.display='none';
+  const cont=document.getElementById('objetos-contar'); cont.innerHTML='';
+  for(let i=0;i<contarTotal;i++){
+    const el=document.createElement('div'); el.className='objeto'; el.textContent=emojiSesion;
+    el.onclick=()=>{
+      if(el.classList.contains('contado'))return;
+      el.classList.add('contado'); contarTocados++;
+      const c=document.getElementById('contador-contar');
+      c.textContent=contarTocados; c.style.animation='none'; c.offsetHeight; c.style.animation='pulsarNum 0.3s ease';
+      hablar(String(contarTocados));
+      if(contarTocados===contarTotal){ G.aciertos++; mostrarFeedback('contar',true); document.getElementById('btn-contar-ok').style.display='block'; }
+    };
+    cont.appendChild(el);
+  }
+}
+
+// ════════════════════════════════════════
+// CANTIDAD
+// ════════════════════════════════════════
+function iniciarCantidad() {
+  mostrarPantalla('pantalla-cantidad');
+  actualizarProgreso('cantidad',1,G.total); cargarCantidad();
+}
+function cargarCantidad() {
+  const c=Math.min(numRand(G.nivel),15);
+  document.getElementById('feedback-cantidad').textContent=''; document.getElementById('feedback-cantidad').className='feedback';
+  const cont=document.getElementById('objetos-cantidad'); cont.innerHTML='';
+  for(let i=0;i<c;i++){ const el=document.createElement('div'); el.style.fontSize='44px'; el.textContent=emojiSesion; cont.appendChild(el); }
+  const ops=opcionesUnicas(c,3,Math.min(G.nivel,20));
+  const oc=document.getElementById('opciones-cantidad'); oc.innerHTML='';
+  ops.forEach(n=>{
+    const b=document.createElement('button'); b.className='btn-opcion'; b.textContent=n;
+    b.onclick=()=>{ if(G.respondido)return; G.respondido=true; const ok=n===c; b.classList.add(ok?'correcto':'incorrecto'); if(ok)G.aciertos++; mostrarFeedback('cantidad',ok); setTimeout(()=>siguiente('cantidad',cargarCantidad),1400); };
+    oc.appendChild(b);
+  });
+}
+
+// ════════════════════════════════════════
+// ORDENAR
+// ════════════════════════════════════════
+function iniciarOrdenar() {
+  mostrarPantalla('pantalla-ordenar');
+  actualizarProgreso('ordenar',1,G.total); cargarOrdenar();
+}
+function cargarOrdenar() {
+  document.getElementById('feedback-ordenar').textContent=''; document.getElementById('feedback-ordenar').className='feedback';
+  const max=G.nivel; const ant=numRand(max-1); const sig=ant+1;
+  const sec=document.getElementById('secuencia-ordenar'); sec.innerHTML='';
+  if(ant>1){ const f=document.createElement('div'); f.className='ficha-numero'; f.textContent=ant-1; sec.appendChild(f); }
+  const fa=document.createElement('div'); fa.className='ficha-numero'; fa.textContent=ant; sec.appendChild(fa);
+  const ar=document.createElement('div'); ar.style.cssText='font-size:28px;color:var(--txt2)'; ar.textContent='→'; sec.appendChild(ar);
+  const h=document.createElement('div'); h.className='ficha-numero vacia'; h.textContent='?'; sec.appendChild(h);
+  hablar('¿Qué número va después del '+ant+'?');
+  const ops=opcionesUnicas(sig,3,max); const oc=document.getElementById('opciones-ordenar'); oc.innerHTML='';
+  ops.forEach(n=>{
+    const b=document.createElement('button'); b.className='btn-opcion'; b.textContent=n;
+    b.onclick=()=>{
+      if(G.respondido)return; G.respondido=true; const ok=n===sig; b.classList.add(ok?'correcto':'incorrecto');
+      if(ok){ G.aciertos++; h.textContent=sig; h.classList.remove('vacia'); h.style.background='var(--p2)'; h.style.color='white'; }
+      mostrarFeedback('ordenar',ok); setTimeout(()=>siguiente('ordenar',cargarOrdenar),1400);
+    };
+    oc.appendChild(b);
+  });
+}
+
+// ════════════════════════════════════════
+// COMPARAR (con feedback del número)
+// ════════════════════════════════════════
+function iniciarComparar() {
+  mostrarPantalla('pantalla-comparar');
+  actualizarProgreso('comparar',1,G.total); cargarComparar();
+}
+function cargarComparar() {
+  document.getElementById('feedback-comparar').textContent=''; document.getElementById('feedback-comparar').className='feedback';
+  let a=Math.min(numRand(G.nivel),12), b=Math.min(numRand(G.nivel),12);
+  while(a===b) b=Math.min(numRand(G.nivel),12);
+  const tipo=Math.random()<0.5?'mas':'menos';
+  document.getElementById('preg-comparar').textContent=tipo==='mas'?'¿Cuál grupo tiene MÁS?':'¿Cuál grupo tiene MENOS?';
+  const respCorrecta=tipo==='mas'?(a>b?0:1):(a<b?0:1);
+  const numCorrecto=respCorrecta===0?a:b;
+  const cont=document.getElementById('grupos-comparar'); cont.innerHTML='';
+  [a,b].forEach((n,idx)=>{
+    const g=document.createElement('div'); g.className='grupo-comparar';
+    const og=document.createElement('div'); og.className='objetos-grupo';
+    for(let i=0;i<n;i++){ const oj=document.createElement('div'); oj.className='obj'; oj.textContent=emojiSesion; og.appendChild(oj); }
+    const ne=document.createElement('div'); ne.className='num-grupo'; ne.textContent=n;
+    g.appendChild(og); g.appendChild(ne);
+    g.onclick=()=>{
+      if(G.respondido)return; G.respondido=true;
+      const ok=idx===respCorrecta;
+      g.style.background=ok?'var(--p2)':'var(--rojo)';
+      g.style.border='none';
+      g.querySelectorAll('*').forEach(x=>x.style.color='white');
+      if(ok) G.aciertos++;
+      // ← aquí el feedback especial con el número
+      const extra=ok?`¡El grupo tiene ${numCorrecto}!`:'';
+      mostrarFeedback('comparar',ok,extra);
+      setTimeout(()=>siguiente('comparar',cargarComparar),1800);
+    };
+    cont.appendChild(g);
+  });
+  hablar(tipo==='mas'?'¿Cuál grupo tiene más?':'¿Cuál grupo tiene menos?');
+}
+
+// ════════════════════════════════════════
+// SUMAS Y RESTAS
+// ════════════════════════════════════════
+function iniciarSumas() {
+  mostrarPantalla('pantalla-sumas');
+  actualizarProgreso('sumas',1,G.total); cargarSumas();
+}
+function cargarSumas() {
+  document.getElementById('feedback-sumas').textContent=''; document.getElementById('feedback-sumas').className='feedback';
+  const maxOp=Math.min(G.nivel,20);
+  const esSuma=Math.random()<0.6; // 60% sumas, 40% restas al empezar
+  let a,b,resultado,signo;
+  if(esSuma){ a=numRand(maxOp-1); b=numRand(maxOp-a); resultado=a+b; signo='+'; }
+  else { a=numRand(maxOp); b=numRand(a); resultado=a-b; signo='−'; }
+
+  // Mostrar operación
+  const od=document.getElementById('operacion-sumas');
+  od.innerHTML=`
+    <div class="operacion-texto">
+      ${a} <span class="signo">${signo}</span> ${b} = <span class="resultado-hueco">?</span>
+    </div>
+    <div class="ayuda-visual" id="ayuda-visual-sumas"></div>`;
+
+  // Ayuda visual con bolitas
+  const av=document.getElementById('ayuda-visual-sumas');
+  if(a+b<=20){
+    for(let i=0;i<a;i++){ const d=document.createElement('div'); d.className='bolita a'; d.textContent=emojiSesion; av.appendChild(d); }
+    for(let i=0;i<b;i++){
+      const d=document.createElement('div'); d.className='bolita b'+(signo==='−'?' tachada':''); d.textContent=emojiSesion; av.appendChild(d);
+    }
+  }
+
+  const ops=opcionesUnicas(resultado,3,Math.min(a+b+5,maxOp+b),Math.max(0,resultado-3));
+  const oc=document.getElementById('opciones-sumas'); oc.innerHTML='';
+  ops.forEach(n=>{
+    const bt=document.createElement('button'); bt.className='btn-opcion'; bt.textContent=n;
+    bt.onclick=()=>{
+      if(G.respondido)return; G.respondido=true; const ok=n===resultado;
+      bt.classList.add(ok?'correcto':'incorrecto');
+      if(ok){ G.aciertos++; od.querySelector('.resultado-hueco').textContent=resultado; od.querySelector('.resultado-hueco').style.color='var(--p2)'; }
+      mostrarFeedback('sumas',ok); setTimeout(()=>siguiente('sumas',cargarSumas),1500);
+    };
+    oc.appendChild(bt);
+  });
+  hablar(`${a} ${esSuma?'más':'menos'} ${b} ¿cuánto es?`);
+}
+
+// ════════════════════════════════════════
+// MULTIPLICACIÓN Y DIVISIÓN
+// ════════════════════════════════════════
+function iniciarMulti() {
+  mostrarPantalla('pantalla-multi');
+  actualizarProgreso('multi',1,G.total); cargarMulti();
+}
+function cargarMulti() {
+  document.getElementById('feedback-multi').textContent=''; document.getElementById('feedback-multi').className='feedback';
+  const esMulti=Math.random()<0.5;
+  const maxFactor=Math.min(5, Math.floor(Math.sqrt(G.nivel)));
+  let a,b,resultado;
+  if(esMulti){
+    a=numRand(maxFactor); b=numRand(maxFactor); resultado=a*b;
+    document.getElementById('preg-multi').textContent=`¿Cuánto es ${a} × ${b}?`;
+    hablar(`${a} por ${b}, ¿cuánto es?`);
+
+    // Visual: grupos de objetos
+    const d=document.getElementById('display-multi');
+    let html=`<div class="multi-display"><div class="multi-texto">${a} <span style="color:var(--p1)">×</span> ${b} = ?</div><div style="font-size:14px;color:var(--txt2);text-align:center;margin-bottom:12px">${a} grupos de ${b}</div><div class="multi-grupos">`;
+    for(let i=0;i<a;i++){
+      html+=`<div class="multi-grupo">`;
+      for(let j=0;j<b;j++) html+=`<div class="obj">${emojiSesion}</div>`;
+      html+=`</div>`;
+      if(i<a-1) html+=`<div class="multi-sep">+</div>`;
+    }
+    html+=`</div></div>`;
+    d.innerHTML=html;
+  } else {
+    // División simple (sin resto)
+    b=numRand(maxFactor); resultado=numRand(maxFactor); a=b*resultado;
+    document.getElementById('preg-multi').textContent=`¿Cuánto es ${a} ÷ ${b}?`;
+    hablar(`${a} dividido entre ${b}, ¿cuánto es?`);
+    const d=document.getElementById('display-multi');
+    let html=`<div class="division-display"><div class="division-linea"><div class="div-box">${a}</div><div class="div-signo">÷</div><div class="div-box">${b}</div><div class="div-signo">=</div><div class="div-box" style="color:var(--p1)">?</div></div>`;
+    // Visual: repartir en grupos
+    html+=`<div style="margin-top:14px;font-size:14px;color:var(--txt2);text-align:center">Repartir ${a} ${emojiSesion} en ${b} grupos iguales</div><div class="multi-grupos" style="margin-top:10px">`;
+    for(let i=0;i<b;i++){
+      html+=`<div class="multi-grupo">`;
+      for(let j=0;j<resultado;j++) html+=`<div class="obj">${emojiSesion}</div>`;
+      html+=`</div>`;
+    }
+    html+=`</div></div>`;
+    d.innerHTML=html;
+  }
+
+  const ops=opcionesUnicas(resultado,3,Math.max(resultado+4,6),Math.max(1,resultado-3));
+  const oc=document.getElementById('opciones-multi'); oc.innerHTML='';
+  ops.forEach(n=>{
+    const bt=document.createElement('button'); bt.className='btn-opcion'; bt.textContent=n;
+    bt.onclick=()=>{
+      if(G.respondido)return; G.respondido=true; const ok=n===resultado;
+      bt.classList.add(ok?'correcto':'incorrecto'); if(ok)G.aciertos++;
+      mostrarFeedback('multi',ok); setTimeout(()=>siguiente('multi',cargarMulti),1500);
+    };
+    oc.appendChild(bt);
+  });
+}
+
+// ════════════════════════════════════════
+// PIANO
+// ════════════════════════════════════════
+const NOTAS_NOMBRES=['Do','Re','Mi','Fa','Sol','La','Si','Do♪','Re♪','Mi♪','Fa♪'];
+const COLORES_PIANO=['#FF6B6B','#FF9F43','#FFD166','#06D6A0','#5B8FF9','#A78BFA','#F472B6','#FF6B6B','#FF9F43','#FFD166','#06D6A0'];
+// Frecuencias aproximadas (Do4 a Do5)
+const FREQS=[261.63,293.66,329.63,349.23,392.00,440.00,493.88,523.25,587.33,659.25,698.46];
+let audioCtx=null;
+
+function getAudioCtx() {
+  if(!audioCtx) audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+  return audioCtx;
+}
+function tocarNota(freq, duracion=0.6) {
+  try {
+    const ctx=getAudioCtx();
+    const osc=ctx.createOscillator();
+    const gain=ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type='triangle';
+    osc.frequency.setValueAtTime(freq, ctx.currentTime);
+    gain.gain.setValueAtTime(0.4, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime+duracion);
+    osc.start(ctx.currentTime); osc.stop(ctx.currentTime+duracion);
+  } catch(e){}
+}
+
+function iniciarPiano() {
+  mostrarPantalla('pantalla-piano');
+  construirPiano();
+  document.getElementById('piano-num-mostrado').textContent='—';
+  document.getElementById('piano-nom-nota').textContent='Toca una tecla';
+  document.getElementById('feedback-piano').textContent='';
+  document.getElementById('piano-pregunta-area').style.display='none';
+  G.pianoPreguntaNum=null;
+}
+
+function construirPiano() {
+  const cont=document.getElementById('piano-teclas'); cont.innerHTML='';
+  for(let n=0;n<=10;n++){
+    const b=document.createElement('button'); b.className='tecla-piano';
+    b.style.background=COLORES_PIANO[n];
+    b.style.boxShadow=`0 7px 0 rgba(0,0,0,0.25)`;
+    b.innerHTML=`<span style="font-size:28px;font-weight:900">${n}</span><span class="nota-label">${NOTAS_NOMBRES[n]}</span>`;
+    b.onclick=()=>pulsarTecla(n,b);
+    cont.appendChild(b);
+  }
+}
+
+function setSonido(modo, btn) {
+  G.pianoSonido = modo;
+  document.querySelectorAll('.btn-sonido').forEach(b=>b.classList.remove('activo'));
+  btn.classList.add('activo');
+}
+
+function pulsarTecla(n, btn) {
+  // Sonido según preferencia
+  const s = G.pianoSonido;
+  if (s === 'nota' || s === 'ambos') tocarNota(FREQS[n]);
+  if (s === 'numero' || s === 'ambos') {
+    // Si también suena la nota, esperar un poco para que no se solapen
+    setTimeout(() => hablar(String(n), 0.8, 1.0), s === 'ambos' ? 350 : 0);
+  }
+
+  document.getElementById('piano-num-mostrado').textContent=n;
+  document.getElementById('piano-nom-nota').textContent=NOTAS_NOMBRES[n];
+  // Animación
+  btn.classList.add('pulsada');
+  const nota=document.createElement('div'); nota.className='nota-animada'; nota.textContent='♪';
+  btn.appendChild(nota);
+  setTimeout(()=>{ btn.classList.remove('pulsada'); nota.remove(); },600);
+
+  // Modo escucha: comprobar
+  if(G.pianoModo==='escuchar' && G.pianoPreguntaNum!==null){
+    if(G.respondido) return;
+    G.respondido=true;
+    const ok=n===G.pianoPreguntaNum;
+    if(ok){ G.aciertos++; lanzarEstrellas(); hablar('¡Muy bien! El número '+n); document.getElementById('feedback-piano').textContent='¡Correcto! 🎉'; document.getElementById('feedback-piano').className='feedback ok'; }
+    else { hablar('Inténtalo otra vez'); document.getElementById('feedback-piano').textContent='¡Inténtalo de nuevo! 💪'; document.getElementById('feedback-piano').className='feedback mal'; G.respondido=false; return; }
+    setTimeout(()=>nuevaPreguntaPiano(),1400);
+  }
+}
+
+function setPianoModo(modo, btn) {
+  G.pianoModo=modo;
+  document.querySelectorAll('.btn-piano-modo').forEach(b=>b.classList.remove('activo')); btn.classList.add('activo');
+  const pa=document.getElementById('piano-pregunta-area');
+  if(modo==='escuchar'){ pa.style.display='block'; G.aciertos=0; G.pregunta=0; nuevaPreguntaPiano(); }
+  else { pa.style.display='none'; G.pianoPreguntaNum=null; document.getElementById('feedback-piano').textContent=''; document.getElementById('piano-num-mostrado').textContent='—'; document.getElementById('piano-nom-nota').textContent='Toca una tecla'; }
+}
+
+function nuevaPreguntaPiano() {
+  G.respondido=false;
+  G.pianoPreguntaNum=Math.floor(Math.random()*11); // 0-10
+  const n=G.pianoPreguntaNum;
+  const s=G.pianoSonido;
+  // Texto de la pista según el modo de sonido
+  let pistaTxt='';
+  if(s==='numero')      pistaTxt=`¿Cuál tecla es el número ${n}? 🔢`;
+  else if(s==='nota')   pistaTxt=`¿Cuál tecla suena así? 🎵`;
+  else if(s==='ambos')  pistaTxt=`Escucha y toca el número ${n} 🎵`;
+  else                  pistaTxt=`Toca el número ${n} 🔢`;
+  document.getElementById('piano-pregunta-txt').textContent=pistaTxt;
+  document.getElementById('feedback-piano').textContent='';
+  // Reproducir la pista según preferencia
+  setTimeout(()=>{
+    if(s==='nota' || s==='ambos') tocarNota(FREQS[n], 0.9);
+    if(s==='numero' || s==='ambos') setTimeout(()=>hablar('Toca el número '+n), s==='ambos'?400:0);
+    if(s==='ninguno') hablar('Toca el número '+n); // en modo sin sonido siempre damos pista verbal para que el juego funcione
+  },300);
+}
+
+// ════════════════════════════════════════
+// TRAZAR
+// ════════════════════════════════════════
+let ctx2d, dibujando=false, trazosN=0;
+
+function iniciarTrazo() {
+  mostrarPantalla('pantalla-trazar');
+  actualizarProgreso('trazar',1,G.total);
+  setupCanvas(); cargarTrazo();
+}
+function setupCanvas() {
+  const canvas=document.getElementById('canvas-trazar');
+  canvas.width=canvas.offsetWidth*window.devicePixelRatio||320;
+  canvas.height=260*window.devicePixelRatio;
+  canvas.style.height='260px';
+  ctx2d=canvas.getContext('2d');
+  ctx2d.scale(window.devicePixelRatio,window.devicePixelRatio);
+  ctx2d.strokeStyle='var(--p1,#5B8FF9)'; ctx2d.lineWidth=14; ctx2d.lineCap='round'; ctx2d.lineJoin='round';
+  canvas.addEventListener('touchstart',e=>{e.preventDefault();startD(e.touches[0]);},{passive:false});
+  canvas.addEventListener('touchmove', e=>{e.preventDefault();moveD(e.touches[0]);},{passive:false});
+  canvas.addEventListener('touchend',  e=>{e.preventDefault();endD();});
+  canvas.addEventListener('mousedown', e=>startD(e));
+  canvas.addEventListener('mousemove', e=>moveD(e));
+  canvas.addEventListener('mouseup',   endD);
+}
+function getP(e){ const r=document.getElementById('canvas-trazar').getBoundingClientRect(); return{x:e.clientX-r.left,y:e.clientY-r.top}; }
+function startD(e){ dibujando=true; const p=getP(e); ctx2d.beginPath(); ctx2d.moveTo(p.x,p.y); trazosN++; }
+function moveD(e){ if(!dibujando)return; const p=getP(e); ctx2d.lineTo(p.x,p.y); ctx2d.stroke(); ctx2d.beginPath(); ctx2d.moveTo(p.x,p.y); }
+function endD(){ dibujando=false; }
+
+function cargarTrazo() {
+  const n=numRand(G.nivel); document.getElementById('num-trazar').textContent=n;
+  document.getElementById('feedback-trazar').textContent='Dibuja el '+n+' con el dedo';
+  document.getElementById('feedback-trazar').className='feedback';
+  trazosN=0; limpiarCanvas(); dibujarGuia(n); hablar('Dibuja el número '+n);
+}
+function dibujarGuia(n) {
+  if(!ctx2d)return;
+  const w=document.getElementById('canvas-trazar').offsetWidth, h=260;
+  ctx2d.save(); ctx2d.font='bold 200px Nunito,sans-serif'; ctx2d.textAlign='center'; ctx2d.textBaseline='middle';
+  ctx2d.fillStyle='rgba(91,143,249,0.07)'; ctx2d.fillText(String(n),w/2,h/2); ctx2d.restore();
+}
+function limpiarCanvas() {
+  if(!ctx2d)return;
+  const w=document.getElementById('canvas-trazar').offsetWidth;
+  ctx2d.clearRect(0,0,w*window.devicePixelRatio,260*window.devicePixelRatio);
+  dibujarGuia(document.getElementById('num-trazar').textContent);
+}
+function siguienteTrazo() {
+  if(trazosN===0){ hablar('¡Dibuja primero!'); document.getElementById('feedback-trazar').textContent='¡Primero dibuja! ✏️'; document.getElementById('feedback-trazar').className='feedback mal'; return; }
+  G.aciertos++; lanzarEstrellas(); hablar('¡Muy bien!');
+  setTimeout(()=>siguiente('trazar',cargarTrazo),800);
+}
+
+// ════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════
+cargarLocal();
+// Tema para el ctx de trazado usa color CSS real
+document.addEventListener('DOMContentLoaded', ()=>{
+  if(ctx2d){ const c=getComputedStyle(document.body).getPropertyValue('--p1').trim(); if(c)ctx2d.strokeStyle=c; }
+});
+
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js'));
+}
+</script>
+</body>
+</html>
