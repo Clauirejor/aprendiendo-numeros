@@ -1225,9 +1225,23 @@ function cargarOrdenar() {
   ops.forEach(n=>{
     const b=document.createElement('button'); b.className='btn-opcion'; b.textContent=n;
     b.onclick=()=>{
-      if(G.respondido)return; G.respondido=true; const ok=n===sig; b.classList.add(ok?'correcto':'incorrecto');
-      if(ok){ G.aciertos++; h.textContent=sig; h.classList.remove('vacia'); h.style.background='var(--p2)'; h.style.color='white'; }
-      mostrarFeedback('ordenar',ok); setTimeout(()=>siguiente('ordenar',cargarOrdenar),1400);
+      if(G.respondido) return;
+      const ok = n===sig;
+      if(!ok){
+        b.classList.add('incorrecto');
+        mostrarFeedback('ordenar', false);
+        setTimeout(()=>{
+          b.classList.remove('incorrecto');
+          document.getElementById('feedback-ordenar').textContent='';
+          document.getElementById('feedback-ordenar').className='feedback';
+        }, 1100);
+        return;
+      }
+      G.respondido=true; G.aciertos++;
+      b.classList.add('correcto');
+      h.textContent=sig; h.classList.remove('vacia'); h.style.background='var(--p2)'; h.style.color='white';
+      mostrarFeedback('ordenar', true);
+      setTimeout(()=>siguiente('ordenar',cargarOrdenar), 1400);
     };
     oc.appendChild(b);
   });
